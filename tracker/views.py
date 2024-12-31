@@ -44,7 +44,9 @@ def dashboard(request):
 
     # Fetch transactions and contributions for the user
     transactions_pure = Transaction.objects.filter(user=request.user, team__isnull=True)
-    print(f'{transactions_pure} pure')
+    for transaction in transactions_pure:
+        print(f' dates {transaction.date}')
+    
     contributions = Contribution.objects.filter(user=request.user)
 
     # Apply date range filter if both start and end dates are provided

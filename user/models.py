@@ -4,10 +4,10 @@ import string
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, User
 from django.db import models
-from django_cryptography.fields import encrypt
+from encrypted_model_fields.fields import EncryptedCharField, EncryptedTextField, EncryptedEmailField
 
 class CustomUser(AbstractUser):
-    email = encrypt(models.EmailField(unique=True))
+    email = EncryptedEmailField(unique=True)
     profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
     
 
@@ -27,8 +27,8 @@ def generate_team_code(length=6):
 
 class Team(models.Model):
     team_code = models.CharField(max_length=6, unique=True, blank=True)  # Ensure it's a unique 6-character code
-    name = encrypt(models.CharField(max_length=50))
-    description = encrypt(models.TextField())
+    name = EncryptedCharField(max_length=50)
+    description = EncryptedTextField()
     creator = models.ForeignKey(
         settings.AUTH_USER_MODEL, related_name='created_teams', on_delete=models.CASCADE
     )

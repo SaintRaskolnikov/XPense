@@ -7,7 +7,7 @@ from django.utils.timezone import now
 import json
 import os
 import uuid
-from django_cryptography.fields import encrypt
+from encrypted_model_fields.fields import EncryptedCharField, EncryptedTextField
 
 
 
@@ -32,10 +32,10 @@ class Transaction(models.Model):
     ]
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    description = encrypt(models.CharField(max_length=255))
-    amount = encrypt(models.DecimalField(max_digits=10, decimal_places=2))
+    description = EncryptedCharField(max_length=255)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
-    date = encrypt(models.DateTimeField(auto_now_add=True))
+    date = models.DateTimeField(auto_now_add=True)
     transaction_hash = models.CharField(max_length=32, unique=True, editable=False)
     team = models.ForeignKey(Team, on_delete=models.SET_NULL, blank=True, null=True)
     transaction_type = models.CharField(max_length=7, choices=TRANSACTION_TYPES, default='expense')
@@ -61,7 +61,7 @@ class Transaction(models.Model):
 class Contribution(models.Model):
     transaction = models.ForeignKey(Transaction, on_delete=models.CASCADE, related_name='contributions')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='contributions')
-    amount = encrypt(models.DecimalField(max_digits=10, decimal_places=2))
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
 
 class ActiveSubscriptionManager(models.Manager):
     """Custom manager to filter active subscriptions."""
@@ -100,10 +100,10 @@ class Subscription(models.Model):
         on_delete=models.CASCADE,
         related_name='subscriptions'
     )
-    name = encrypt(models.CharField(max_length=255))
-    description = encrypt(models.TextField(blank=True, null=True))
+    name = EncryptedCharField(max_length=255)
+    description = EncryptedTextField(blank=True, null=True)
     category = models.CharField(max_length=255, choices=CATEGORY_CHOICES)
-    amount = encrypt(models.DecimalField(max_digits=10, decimal_places=2))
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
     periodicity = models.CharField(max_length=10, choices=PERIODICITY_CHOICES)
     start_date = models.DateField(default=now)
     is_active = models.BooleanField(default=True)
