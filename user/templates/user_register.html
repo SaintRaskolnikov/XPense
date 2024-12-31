@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+    .valid {
+    color: green;
+    }
+
+    /* Invalid password condition */
+    .invalid {
+        color: red;
+    }
+</style>
+<section class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-8">
+    <div class="max-w-sm w-full p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+        <form method="POST" id="register-form" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- Username Field -->
+            <div class="relative z-0 w-full mb-5 group">
+                <label for="floating_username" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Username</label>
+                <input type="text" name="username" id="floating_username" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder=" " required />
+            </div>
+          
+            <!-- Email Field -->
+            <div class="relative z-0 w-full mb-5 group">
+                <label for="floating_email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email address</label>
+                <input type="email" name="email" id="floating_email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder=" " required />
+            </div>
+          
+            <!-- Password Field -->
+            <div class="relative z-0 w-full mb-5 group">
+                <label for="floating_password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+                <input type="password" name="password" id="floating_password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder=" " required />
+                
+                <div id="password-requirements" class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                    <p id="uppercase" class="invalid">Password must contain at least one uppercase letter.</p>
+                    <p id="number" class="invalid">Password must contain at least one number.</p>
+                    <p id="special-char" class="invalid">Password must contain at least one special character.</p>
+                </div>
+            </div>
+          
+            <!-- Confirm Password Field -->
+            <div class="relative z-0 w-full mb-5 group">
+                <label for="floating_password_confirm" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Confirm password</label>
+                <input type="password" name="password_confirm" id="floating_password_confirm" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder=" " required />
+            </div>
+            <!-- Profile Picture Field -->
+            <div class="relative z-0 w-full mb-5 group">
+                <label for="floating_profile_picture" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Profile Picture</label>
+                <input type="file" name="profile_picture" id="floating_profile_picture" 
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" />
+            </div>
+          
+            <!-- Submit Button -->
+            <button type="submit" id="submit-btn" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" disabled>Register</button>
+        </form>
+    </div>
+</section>
+
+<script>
+    const password = document.getElementById('floating_password');
+    const passwordConfirm = document.getElementById('floating_password_confirm');
+    const submitButton = document.getElementById('submit-btn');
+    const passwordRequirements = {
+        uppercase: document.getElementById('uppercase'),
+        number: document.getElementById('number'),
+        specialChar: document.getElementById('special-char')
+    };
+
+    function validatePassword() {
+        const passwordValue = password.value;
+        let valid = true;
+
+        // Check if password contains at least one uppercase letter
+        if (!/[A-Z]/.test(passwordValue)) {
+            passwordRequirements.uppercase.classList.remove('valid');
+            passwordRequirements.uppercase.classList.add('invalid');
+            valid = false;
+        } else {
+            passwordRequirements.uppercase.classList.remove('invalid');
+            passwordRequirements.uppercase.classList.add('valid');
+        }
+
+        // Check if password contains at least one number
+        if (!/[0-9]/.test(passwordValue)) {
+            passwordRequirements.number.classList.remove('valid');
+            passwordRequirements.number.classList.add('invalid');
+            valid = false;
+        } else {
+            passwordRequirements.number.classList.remove('invalid');
+            passwordRequirements.number.classList.add('valid');
+        }
+
+        // Check if password contains a special character
+        if (!/[!@#$%^&*(),.?":{}|<>]/.test(passwordValue)) {
+            passwordRequirements.specialChar.classList.remove('valid');
+            passwordRequirements.specialChar.classList.add('invalid');
+            valid = false;
+        } else {
+            passwordRequirements.specialChar.classList.remove('invalid');
+            passwordRequirements.specialChar.classList.add('valid');
+        }
+
+        // Enable or disable submit button based on validity
+        submitButton.disabled = !valid || passwordValue !== passwordConfirm.value;
+    }
+
+    // Validate password confirm match
+    function validatePasswordConfirm() {
+        if (password.value !== passwordConfirm.value) {
+            submitButton.disabled = true;
+        } else {
+            validatePassword();
+        }
+    }
+
+    password.addEventListener('input', validatePassword);
+    passwordConfirm.addEventListener('input', validatePasswordConfirm);
+</script>
+
+{% endblock %}

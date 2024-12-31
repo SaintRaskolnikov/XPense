@@ -1,0 +1,7 @@
+[
+  {"code": "food", "description": "Food"},
+  {"code": "transport", "description": "Transport"},
+  {"code": "entertainment", "description": "Entertainment"},
+  {"code": "utilities", "description": "Utilities"},
+  {"code": "other", "description": "Other"}
+]
