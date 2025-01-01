@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import os
 from celery.schedules import crontab
+from urllib.parse import urlparse
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -44,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'user',
     'tracker',
+    'django.contrib.postgres'
 ]
 
 MIDDLEWARE = [
@@ -84,12 +86,28 @@ AUTHENTICATION_BACKENDS = [
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+#DATABASES = {
+    #'default': {
+        #'ENGINE': 'django.db.backends.sqlite3',
+        #'NAME': BASE_DIR / 'db.sqlite3',
+    #}
+#}
+
+DATABASE_URL = os.environ.get("DATABASE_URL", "postgres://neondb_owner:jEiqaU8tfJ2N@ep-muddy-wave-a20l0wxh-pooler.eu-central-1.aws.neon.tech/neondb?sslmode=require")
+
+url = urlparse(DATABASE_URL)
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': url.path[1:],
+        'USER': url.username,
+        'PASSWORD': url.password,
+        'HOST': url.hostname,
+        'PORT': url.port,
     }
 }
+
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Or use a different broker
 CELERY_ACCEPT_CONTENT = ['json']
