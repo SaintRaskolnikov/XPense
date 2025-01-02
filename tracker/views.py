@@ -2,7 +2,7 @@
 from django.contrib.auth.decorators import login_required
 from django.db import transaction as db_transaction
 from django.http import JsonResponse
-from .models import Transaction, Contribution, Subscription
+from .models import Transaction, Contribution, Subscription, Goals
 from user.models import Team, CustomUser
 from django.http import Http404
 from .forms import TransactionForm, ContributionForm, SubscriptionForm
@@ -15,9 +15,12 @@ from django.utils import timezone
 from datetime import datetime
 from django.utils.dateparse import parse_datetime
 
+
+from django.utils.timezone import now
+
 @login_required
 def dashboard(request):
-    today = datetime.today()
+    today = now()
 
     # Set the default start date to the first of the current month
     default_start_date = today.replace(day=1)
@@ -58,6 +61,16 @@ def dashboard(request):
         contributions = contributions.filter(transaction__date__lte=end_date)
 
     transactions_pure = transactions_pure.order_by('-date')
+
+    subs_renewal_warning = []
+    subscriptions = Subscription.objects.filter(user=request.user)
+    for subscription in subscriptions:
+        next = subscription.get_next_transaction_date()
+        if next and timezone.is_naive(next):
+            next = timezone.make_aware(next)
+        if next <= today:
+            subs_renewal_warning.append(subscription)
+
     print(f'{transactions_pure} 2pure')
     contributions = contributions.order_by('-transaction__date')
 
@@ -93,6 +106,7 @@ def dashboard(request):
         'transactions': transactions,
         'start_date': start_date_str,  # Pass the formatted date for the date input
         'end_date': end_date_str,      # Pass the formatted date for the date input
+        'subs_renewal_warning': subs_renewal_warning,
     })
 
 
@@ -286,16 +300,10 @@ def delete_transaction(request, transaction_hash):
     return render(request, 'delete_transaction.html', {'transaction': transaction})
 
 @login_required
-def graph_view(request):
-        
-    teams = Team.objects.filter(users=request.user)
-    category_choices = Transaction.CATEGORY_CHOICES
-    context = {
-        'teams': teams,
-        'category_choices': category_choices
-    }
+def goals_view(request):
+    goals = Goals.objects.filter(user=request.user)
 
-    return render(request, 'graphs.html', context=context)
+    return render(request, 'goals.html')
 
 @login_required
 def get_graph_data(request):
@@ -406,6 +414,37 @@ def edit_subscription(request, subscription_id):
         'subscription': subscription,
         'category_choices': category_choices,
     })
+
+@login_required
+def renew_subscription(request, pk):
+    subscription = get_object_or_404(Subscription, pk=pk)
+    if subscription.user != request.user:
+        raise Http404("You are not authorized to renew this subscription.")
+    else:
+
+        if request.method == 'POST':
+            subscription.renew()
+            Transaction.objects.create(
+                user=subscription.user,
+                category=subscription.category,
+                amount=subscription.amount,
+                description=subscription.name,
+                transaction_type='expense',
+                date=subscription.get_next_transaction_date(),
+            )
+            return redirect('tracker:dashboard')  # Redirect to the dashboard or another page
+
+
+@login_required
+def cancel_subscription(request, pk):
+    subscription = get_object_or_404(Subscription, pk=pk)
+    if subscription.user != request.user:
+        raise Http404("You are not authorized to cancel this subscription.")
+    else:
+        if request.method == 'POST':
+            subscription.cancel()
+            return redirect('tracker:dashboard')
+
 
 @login_required
 def user_subscriptions(request):
