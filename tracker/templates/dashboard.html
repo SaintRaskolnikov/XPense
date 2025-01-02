@@ -19,6 +19,52 @@
     <div class="mx-auto max-w-5xl">
       <!-- Container with consistent width -->
       <div class="w-full">
+
+
+        <div class="flex justify-center items-center min-h-screen bg-gray-100 dark:bg-gray-900">
+          <div class="space-y-4">
+            {% for subscription in subs_renewal_warning %}
+              <div id="toast-interactive" class="max-w-md mx-auto p-6 text-gray-500 bg-white rounded-lg shadow-lg dark:bg-gray-800 dark:text-gray-400" role="alert">
+                <div class="flex items-center">
+                  <div class="flex-shrink-0 w-10 h-10 text-blue-500 bg-blue-100 rounded-full flex items-center justify-center dark:text-blue-300 dark:bg-blue-900">
+                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 1v5h-5M2 19v-5h5m10-4a8 8 0 0 1-14.947 3.97M1 10a8 8 0 0 1 14.947-3.97" />
+                    </svg>
+                    <span class="sr-only">Refresh icon</span>
+                  </div>
+                  <div class="ml-4 text-sm">
+                    <div class="font-semibold text-gray-900 dark:text-white">{{ subscription.name }}</div>
+                    <div class="mt-1 text-gray-600 dark:text-gray-400">This subscription is due, do you wish to renew it?</div>
+                    <div class="mt-3 grid grid-cols-2 gap-3">
+                      <!-- Add and Renew Form -->
+                      <form method="POST" action="{% url 'tracker:renew_subscription' subscription.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="w-full px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-800">
+                          Add, and renew
+                        </button>
+                      </form>
+                      <!-- Cancel Subscription Form -->
+                      <form method="POST" action="{% url 'tracker:cancel_subscription' subscription.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="w-full px-3 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-800">
+                          Cancel subscription
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                  <!-- Close Button -->
+                  <button type="button" class="ml-auto p-2 text-gray-400 bg-transparent rounded-full hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:text-gray-500 dark:hover:text-white dark:focus:ring-gray-600" data-dismiss-target="#toast-interactive" aria-label="Close">
+                    <span class="sr-only">Close</span>
+                    <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+        
         <!-- Balance and Chart -->
         <div class="text-center mb-6">
           <h1 class="mb-4 text-3xl font-extrabold text-gray-900 dark:text-white md:text-5xl lg:text-6xl">
@@ -86,7 +132,7 @@
               <table class="min-w-full text-sm text-left text-gray-500 dark:text-gray-400">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                       <tr>
-                          <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400">User</th>
+                          <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400">Description</th>
                           <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400">Category</th>
                           <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400">Transaction Type</th>
                           <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400">Amount</th>
@@ -99,8 +145,8 @@
                       {% if transaction.transaction_hash %}
                         <tr class="bg-white dark:bg-gray-900">
                             <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
-                                <p class="truncate">{{ transaction.user.username }}</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ transaction.user.email }}</p>
+                                <p class="truncate">{{ transaction.description}}</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ transaction.user.username }}</p>
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ transaction.category}}</td>
                             <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
@@ -135,10 +181,12 @@
                                 
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ transaction.transaction.date|date:"Y-m-d H:i" }}</td>
-                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                                <a href="{% url 'tracker:edit_transaction' transaction_hash=transaction.transaction.transaction_hash %}">Edit</a>
-
-                            </td>
+                            {% if transaction.transaction.creator == request.user %}
+                              <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                                  <a href="{% url 'tracker:edit_transaction' transaction_hash=transaction.transaction.transaction_hash %}">Edit</a>
+                                  <a href="{% url 'tracker:delete_transaction' transaction_hash=transaction.transaction.transaction_hash %}" class="text-red-600 dark:text-red-400">Delete</a>
+                              </td>
+                            {% endif %}
                         </tr>
                         {% endif %}
                       {% endfor %}

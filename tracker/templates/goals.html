@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% block content %} 
+
+<section class="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
+  <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
+    <div class="mx-auto max-w-5xl">
+      <div class="w-full">
+        <!-- Date Range Picker -->
+        <div id="date-range-picker" date-rangepicker class="flex items-center mb-8">
+          <div class="relative">
+            <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+              <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
+              </svg>
+            </div>
+            <input id="datepicker-range-start" name="start" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Select date start">
+          </div>
+          <span class="mx-4 text-gray-500">to</span>
+          <div class="relative">
+            <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+              <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
+              </svg>
+            </div>
+            <input id="datepicker-range-end" name="end" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Select date end">
+          </div>
+        </div>
+
+        <!-- Team Picker -->
+        <h3 class="mb-4 font-semibold text-gray-900 dark:text-white">Select Teams</h3>
+        <ul class="w-48 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+          {% for team in teams %}
+            <li class="w-full border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+              <div class="flex items-center ps-3">
+                <input id="team{{ team.id }}-checkbox" type="checkbox" class="team-checkbox w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                <label for="team{{ team.id }}-checkbox" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">{{ team.name }}</label>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+
+        <!-- Placeholder for Graph -->
+        <div id="graphs-container" class="mt-8">
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white">Graphs</h3>
+          <!-- Donut Chart -->
+            <div id="donut-chart"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const startDateInput = document.getElementById('datepicker-range-start');
+    const endDateInput = document.getElementById('datepicker-range-end');
+    const teamCheckboxes = document.querySelectorAll('.team-checkbox');
+
+    // Attach change event listeners to date inputs and checkboxes
+    startDateInput.addEventListener('change', triggerGraphUpdate);
+    endDateInput.addEventListener('change', triggerGraphUpdate);
+
+    teamCheckboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', triggerGraphUpdate);
+    });
+
+    // Function to handle the graph update trigger
+    function triggerGraphUpdate() {
+      const selectedTeams = getSelectedTeams();
+      const startDate = formatDate(startDateInput.value);
+      const endDate = formatDate(endDateInput.value);
+
+      console.log('Selected teams:', selectedTeams);
+      console.log('Date range:', startDate, 'to', endDate);
+
+      fetchGraphsData(selectedTeams, startDate, endDate);
+    }
+
+    // Function to get the selected teams
+    function getSelectedTeams() {
+      return Array.from(teamCheckboxes)
+        .filter(checkbox => checkbox.checked)
+        .map(checkbox => {
+          // Extract the numeric team ID from the 'id' attribute of the checkbox
+          const teamId = checkbox.id.split('-')[0].replace('team', ''); // Removes 'team' prefix
+          return parseInt(teamId, 10); // Convert to a number
+        });
+    }
+
+    // Function to format the date to 'YYYY-MM-DD' format
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Add leading zero if needed
+      const day = date.getDate().toString().padStart(2, '0'); // Add leading zero if needed
+      return `${year}-${month}-${day}`;
+    }
+
+    // Function to fetch graph data from the server
+    function fetchGraphsData(teams, startDate, endDate) {
+      console.log('Fetching data for:', { teams, startDate, endDate });
+
+      // Send GET request to the backend
+      fetch("{% url 'tracker:get_graph_data' %}?start_date=" + startDate + "&end_date=" + endDate + "&team_ids=" + teams.join(','))
+        .then(response => response.json())
+        .then(data => {
+          if (data && data.total_spent_per_team) {
+            // Process data and create the donut chart
+            const teamNames = data.total_spent_per_team.map(item => item.team);
+            const amounts = data.total_spent_per_team.map(item => item.total_spent);
+
+            const donutChartOptions = {
+                series: amounts,
+                labels: teamNames,
+                chart: {
+                    type: 'donut',
+                    height: 320,
+                    width: '100%',
+                },
+                colors: ["#1C64F2", "#16BDCA", "#FDBA8C", "#E74694"],
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            labels: {
+                                show: true,
+                                name: {
+                                    show: true,
+                                    fontFamily: "Inter, sans-serif",
+                                    offsetY: 20,
+                                },
+                                total: {
+                                    showAlways: true,
+                                    show: true,
+                                    label: "Total spent",
+                                    fontFamily: "Inter, sans-serif",
+                                    formatter: function (w) {
+                                        const sum = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                                        return '$' + sum.toFixed(2);
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            };
+
+            const donutChart = new ApexCharts(document.getElementById("donut-chart"), donutChartOptions);
+            donutChart.render();
+          } else {
+            console.error('Invalid data format:', data);
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching graph data:', error);
+        });
+    }
+  });
+</script>
+
+{% endblock %}
