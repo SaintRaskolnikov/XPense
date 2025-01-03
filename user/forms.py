@@ -1,11 +1,8 @@
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django import forms
-from django.contrib.auth.models import User
 from .models import CustomUser, Team
 from django.core.exceptions import ValidationError
 import re
-from django.contrib.auth.hashers import make_password
-from django.contrib.auth import authenticate
+
 
 
 class CustomUserCreationForm(forms.ModelForm):
@@ -19,6 +16,9 @@ class CustomUserCreationForm(forms.ModelForm):
     def clean_password(self):
         password = self.cleaned_data.get('password')
         
+        # Check for minimum length
+        if len(password) < 6:
+            raise ValidationError("Password must be at least 6 characters long.")
         # Check for uppercase letter, number, and special character
         if not re.search(r'[A-Z]', password):
             raise ValidationError("Password must contain at least one uppercase letter.")
@@ -48,6 +48,50 @@ class CustomUserCreationForm(forms.ModelForm):
             user.save()  # Save the user to the database
         return user
     
+
+
+class EditProfileForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput, required=False)
+    password_confirm = forms.CharField(widget=forms.PasswordInput, required=False)
+
+    class Meta:
+        model = CustomUser
+        fields = ['username', 'email', 'profile_picture']
+
+class ChangePasswordForm(forms.Form):
+    old_password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'placeholder': 'Old Password'}),
+        label="Old Password"
+    )
+    new_password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'placeholder': 'New Password'}),
+        label="New Password"
+    )
+    new_password_confirm = forms.CharField(
+        widget=forms.PasswordInput(attrs={'placeholder': 'Confirm New Password'}),
+        label="Confirm New Password"
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        new_password = cleaned_data.get("new_password")
+        new_password_confirm = cleaned_data.get("new_password_confirm")
+
+        if new_password != new_password_confirm:
+            raise ValidationError("New passwords do not match.")
+
+        return cleaned_data
+
+    def clean_old_password(self):
+        old_password = self.cleaned_data.get('old_password')
+        if not self.user.check_password(old_password):
+            raise ValidationError("Incorrect password.")
+        return old_password
+
     
 class CustomLoginForm(forms.Form):
     username = forms.CharField(max_length=255)
@@ -61,20 +105,10 @@ class CustomLoginForm(forms.Form):
     def get_user(self):
         return self.user
 
-class EditProfileForm(forms.ModelForm):
-    class Meta:
-        model = CustomUser
-        fields = ['username', 'email', 'profile_picture']
-        widgets = {
-            'username': forms.TextInput(attrs={'class': 'form-control'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control'}),
-            'profile_picture': forms.ClearableFileInput(attrs={'class': 'form-control'}),
-        }
-
 class TeamCreateForm(forms.ModelForm):
     class Meta:
         model = Team
-        fields = ['name', 'description']
+        fields = ['name', 'description', 'team_picture']
 
 class JoinTeamForm(forms.Form):
     team_code = forms.CharField(max_length=6, required=True)

@@ -2,13 +2,13 @@
 import random
 import string
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser, User
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 from encrypted_model_fields.fields import EncryptedCharField, EncryptedTextField, EncryptedEmailField
 
 class CustomUser(AbstractUser):
     email = EncryptedEmailField(unique=True)
-    profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
+    profile_picture = models.CharField(max_length=255, null=True, blank=True)
     
 
     def __str__(self):
@@ -17,8 +17,8 @@ class CustomUser(AbstractUser):
     @property
     def get_profile_picture(self):
         if self.profile_picture:
-            return self.profile_picture.url
-        return '/media/people/user.png'
+            return f'/media/profile_pictures/{self.profile_picture}'
+        return '/media/profile_pictures/user.png'
     
 
 def generate_team_code(length=6):
@@ -35,6 +35,13 @@ class Team(models.Model):
     users = models.ManyToManyField(
         settings.AUTH_USER_MODEL, related_name='teams'
     )
+    team_picture = models.CharField(max_length=255, null=True, blank=True)
+    
+    @property
+    def get_profile_picture(self):
+        if self.profile_picture:
+            return f'/media/profile_pictures/{self.profile_picture}'
+        return '/media/profile_pictures/user.png'
 
     def save(self, *args, **kwargs):
         # Generate a unique team code if it doesn't exist

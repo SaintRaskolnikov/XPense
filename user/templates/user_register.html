@@ -11,6 +11,22 @@
     .invalid {
         color: red;
     }
+
+    .profile-image-preview {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border: 2px solid transparent;
+    }
+
+    .profile-image-preview.selected {
+        border-color: #4CAF50;
+    }
+        /* Highlight selected image with a border and shadow */
+        .selected-image {
+        border: 3px solid #4CAF50; /* Green border for selected image */
+        box-shadow: 0 0 10px rgba(0, 255, 0, 0.3); /* Green shadow effect */
+    }
 </style>
 <section class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-8">
     <div class="max-w-sm w-full p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
@@ -35,6 +51,7 @@
                 <input type="password" name="password" id="floating_password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder=" " required />
                 
                 <div id="password-requirements" class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                    <p id="length" class="invalid">Password must be at least 6 characters long.</p>
                     <p id="uppercase" class="invalid">Password must contain at least one uppercase letter.</p>
                     <p id="number" class="invalid">Password must contain at least one number.</p>
                     <p id="special-char" class="invalid">Password must contain at least one special character.</p>
@@ -48,11 +65,15 @@
             </div>
             <!-- Profile Picture Field -->
             <div class="relative z-0 w-full mb-5 group">
-                <label for="floating_profile_picture" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Profile Picture</label>
-                <input type="file" name="profile_picture" id="floating_profile_picture" 
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" />
+                <label for="profile-picture-selection" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Profile Picture</label>
+                <div id="profile-picture-selection" class="grid grid-cols-3 gap-4">
+                    {% for image in profile_pictures %}
+                        <input type="radio" name="profile_picture" id="{{image}}" value="{{image}}" style="display: none;">
+                        <img src="/media/profile_pictures/{{image}}" alt="{{image}}" class="profile-image-preview rounded-lg cursor-pointer transition transform hover:scale-110" onclick="selectImage('{{image}}', this)">
+                    {% endfor %}
+                    
+                </div>
             </div>
-          
             <!-- Submit Button -->
             <button type="submit" id="submit-btn" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" disabled>Register</button>
         </form>
@@ -64,6 +85,7 @@
     const passwordConfirm = document.getElementById('floating_password_confirm');
     const submitButton = document.getElementById('submit-btn');
     const passwordRequirements = {
+        length: document.getElementById('length'),
         uppercase: document.getElementById('uppercase'),
         number: document.getElementById('number'),
         specialChar: document.getElementById('special-char')
@@ -72,6 +94,16 @@
     function validatePassword() {
         const passwordValue = password.value;
         let valid = true;
+
+        // Check if password is at least 6 characters long
+        if (passwordValue.length < 6) {
+            passwordRequirements.length.classList.remove('valid');
+            passwordRequirements.length.classList.add('invalid');
+            valid = false;
+        } else {
+            passwordRequirements.length.classList.remove('invalid');
+            passwordRequirements.length.classList.add('valid');
+        }
 
         // Check if password contains at least one uppercase letter
         if (!/[A-Z]/.test(passwordValue)) {
@@ -118,6 +150,20 @@
 
     password.addEventListener('input', validatePassword);
     passwordConfirm.addEventListener('input', validatePasswordConfirm);
+
+
+    function selectImage(imageName, imageElement) {
+        // Deselect any previously selected images
+        const selectedImage = document.querySelector('.selected-image');
+        if (selectedImage) {
+            selectedImage.classList.remove('selected-image');
+        }
+
+        // Select the clicked image
+        imageElement.classList.add('selected-image');
+        // You can also set a hidden input with the selected image if necessary
+        document.getElementById('floating_profile_picture').value = imageName;
+    }
 </script>
 
 {% endblock %}

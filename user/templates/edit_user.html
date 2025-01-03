@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+
+    .profile-image-preview {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border: 2px solid transparent;
+    }
+
+    .profile-image-preview.selected {
+        border-color: #4CAF50;
+    }
+
+    .selected-image {
+        border: 3px solid #4CAF50; /* Green border for selected image */
+        box-shadow: 0 0 10px rgba(0, 255, 0, 0.3); /* Green shadow effect */
+    }
+</style>
+
+<section class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-8">
+    <div class="max-w-sm w-full p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+        <form method="POST" id="edit-profile-form" enctype="multipart/form-data">
+            {% csrf_token %}
+            <h2 class="text-center text-xl font-semibold mb-4">Edit Profile</h2>
+
+            <!-- Username Field -->
+            <div class="relative z-0 w-full mb-5 group">
+                <label for="floating_username" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Username</label>
+                <input type="text" name="username" id="floating_username" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" value="{{ form.username.value }}" required />
+            </div>
+          
+            <!-- Email Field -->
+            <div class="relative z-0 w-full mb-5 group">
+                <label for="floating_email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email address</label>
+                <input type="email" name="email" id="floating_email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" value="{{ form.email.value }}" required />
+            </div>
+          
+            <!-- Profile Picture Field -->
+            <div class="relative z-0 w-full mb-5 group">
+                <label for="profile-picture-selection" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Profile Picture</label>
+                <div id="profile-picture-selection" class="grid grid-cols-3 gap-4">
+                    {% for image in profile_pictures %}
+                        <input type="radio" name="profile_picture" id="profile_picture_{{image}}" value="{{image}}" class="hidden" {% if user.profile_picture and user.profile_picture.name == 'profile_pictures/'|add:image %}checked{% endif %}>
+                        <label for="profile_picture_{{image}}">
+                            <img src="/media/profile_pictures/{{image}}" alt="{{image}}" class="profile-image-preview rounded-lg cursor-pointer transition transform hover:scale-110 {% if user.profile_picture and user.profile_picture.name == 'profile_pictures/'|add:image %}selected{% endif %}" onclick="selectImage('{{image}}', this)">
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" id="submit-btn" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Update Profile</button>
+        </form>
+    </div>
+</section>
+
+<script>
+
+
+    function selectImage(imageName, imageElement) {
+        // Deselect any previously selected images
+        const selectedImage = document.querySelector('.selected-image');
+        if (selectedImage) {
+            selectedImage.classList.remove('selected-image');
+        }
+
+        // Select the clicked image
+        imageElement.classList.add('selected-image');
+        // You can also set a hidden input with the selected image if necessary
+        document.getElementById('floating_profile_picture').value = imageName;
+    }
+</script>
+
+{% endblock %}
