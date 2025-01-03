@@ -31,7 +31,7 @@
             <div id="team-picture-selection" class="grid grid-cols-10 gap-4">
                 {% for image in team_pictures %}
                     <input type="radio" name="team_picture" id="{{image}}" value="{{image}}" style="display: none;">
-                    <img src="/media/profile_pictures/{{image}}" alt="{{image}}" class="team-image-preview rounded-lg cursor-pointer transition transform hover:scale-110" onclick="selectImage('{{image}}', this)">
+                    <img src="/public/{{image}}" alt="{{image}}" class="team-image-preview rounded-lg cursor-pointer transition transform hover:scale-110" onclick="selectImage('{{image}}', this)">
                 {% endfor %}
                 
             </div>

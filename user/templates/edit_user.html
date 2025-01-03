@@ -45,7 +45,7 @@
                     {% for image in profile_pictures %}
                         <input type="radio" name="profile_picture" id="profile_picture_{{image}}" value="{{image}}" class="hidden" {% if user.profile_picture and user.profile_picture.name == 'profile_pictures/'|add:image %}checked{% endif %}>
                         <label for="profile_picture_{{image}}">
-                            <img src="/media/profile_pictures/{{image}}" alt="{{image}}" class="profile-image-preview rounded-lg cursor-pointer transition transform hover:scale-110 {% if user.profile_picture and user.profile_picture.name == 'profile_pictures/'|add:image %}selected{% endif %}" onclick="selectImage('{{image}}', this)">
+                            <img src="/public/{{image}}" alt="{{image}}" class="profile-image-preview rounded-lg cursor-pointer transition transform hover:scale-110 {% if user.profile_picture and user.profile_picture.name == 'profile_pictures/'|add:image %}selected{% endif %}" onclick="selectImage('{{image}}', this)">
                         </label>
                     {% endfor %}
                 </div>
