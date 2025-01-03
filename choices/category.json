@@ -3,5 +3,18 @@
   {"code": "transport", "description": "Transport"},
   {"code": "entertainment", "description": "Entertainment"},
   {"code": "utilities", "description": "Utilities"},
+  {"code": "clothing", "description": "Clothing"},
+  {"code": "health", "description": "Health"},
+  {"code": "education", "description": "Education"},
+  {"code": "gifts", "description": "Gifts"},
+  {"code": "savings", "description": "Savings"},
+  {"code": "investment", "description": "Investment"},
+  {"code": "insurance", "description": "Insurance"},
+  {"code": "taxes", "description": "Taxes"},
+  {"code": "rent", "description": "Rent"},
+  {"code": "credit", "description": "Credit"},
+  {"code": "salary", "description": "Salary"},
+  {"code": "interest", "description": "Interest"},
   {"code": "other", "description": "Other"}
+
 ]
