@@ -34,7 +34,7 @@
                 <div id="team-picture-selection" class="grid grid-cols-10 gap-4">
                     {% for image in team_pictures %}
                         <input type="radio" name="team_picture" id="{{image}}" value="{{image}}" style="display: none;">
-                        <img src="/public/{{image}}" alt="{{image}}" class="team-image-preview rounded-lg cursor-pointer transition transform hover:scale-110" onclick="selectImage('{{image}}', this)">
+                        <img src="/media/profile_pictures/{{image}}" alt="{{image}}" class="team-image-preview rounded-lg cursor-pointer transition transform hover:scale-110" onclick="selectImage('{{image}}', this)">
                     {% endfor %}
                     
                 </div>
@@ -54,9 +54,9 @@
                 <div class="flex items-center space-x-4 rtl:space-x-reverse">
                     <div class="flex-shrink-0">
                         {% if user.profile_picture %}
-                        <img src="/public/{{ user.profile_picture }}" alt="Profile Picture" class="h-10 w-10 rounded-full">
+                        <img src="/media/profile_pictures/{{ user.profile_picture }}" alt="Profile Picture" class="h-10 w-10 rounded-full">
                         {% else %}
-                        <img src="/public/user.png" alt="Default Profile Picture" class="h-10 w-10 rounded-full">
+                        <img src="/media/profile_pictures/user.png" alt="Default Profile Picture" class="h-10 w-10 rounded-full">
                         {% endif %}
                     </div>
                     <div class="flex-1 min-w-0">
