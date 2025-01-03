@@ -28,13 +28,13 @@ SECRET_KEY = 'django-insecure-2&wv7-#v%rl$!0$8ju@+#zue)@-qq=uqe!)9*7wjbfwqg6k9ok
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '172.16.0.104', '.vercel.app']
+ALLOWED_HOSTS = ['.vercel.app']
 
 AUTH_USER_MODEL = 'user.CustomUser'
-LOGIN_URL = '/user/login/'
+LOGOUT_REDIRECT_URL = '/' 
+LOGIN_URL = '/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
