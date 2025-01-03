@@ -145,6 +145,47 @@
                     </svg>
                     <div class="text-sm text-gray-900 dark:text-white">View Subscriptions</div>
                   </a>
+
+
+                  <a
+                  href="{% url 'tracker:goals_progress' %}"
+                  class="block p-4 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 group"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="mx-auto mb-1 w-7 h-7 text-gray-400 group-hover:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-400"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M8 3a3 3 0 100 6 3 3 0 000-6zM2 9a7 7 0 0114 0v1H2V9zm5 5a1 1 0 012 0v1H7v-1z"
+                      clip-rule="evenodd"
+                    ></path>
+                  </svg>
+                  <div class="text-sm text-gray-900 dark:text-white">View Goals</div>
+                </a>
+
+                <a
+                href="{% url 'tracker:create_goal' %}"
+                class="block p-4 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 group"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="mx-auto mb-1 w-7 h-7 text-gray-400 group-hover:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-400"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M8 3a3 3 0 100 6 3 3 0 000-6zM2 9a7 7 0 0114 0v1H2V9zm5 5a1 1 0 012 0v1H7v-1z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                <div class="text-sm text-gray-900 dark:text-white">Create a new goal</div>
+              </a>
                 </div>
                 
               </div>
@@ -181,16 +222,16 @@
                 >
                   <li>
                     <a
-                      href="#"
+                      href="{% url 'user:edit_profile' %}"
                       class="block py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-400 dark:hover:text-white"
                       >My profile</a
                     >
                   </li>
                   <li>
                     <a
-                      href="#"
+                      href="{% url 'user:change_password' %}"
                       class="block py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-400 dark:hover:text-white"
-                      >Account settings</a
+                      >Change password</a
                     >
                   </li>
                 </ul>
