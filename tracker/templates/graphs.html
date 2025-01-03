@@ -1,162 +1,203 @@
+
+
 {% extends 'base.html' %}
 
-{% block content %} 
-
+{% block content %}
 <section class="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
-  <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
-    <div class="mx-auto max-w-5xl">
-      <div class="w-full">
-        <!-- Date Range Picker -->
-        <div id="date-range-picker" date-rangepicker class="flex items-center mb-8">
-          <div class="relative">
-            <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-              <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-              </svg>
-            </div>
-            <input id="datepicker-range-start" name="start" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Select date start">
+    <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
+      <div class="flex justify-center items-center">
+        <div class="w-full max-w-lg">
+          <div class="text-center mb-6">
+            <h1 class="mb-4 text-3xl font-extrabold text-gray-900 dark:text-white md:text-5xl lg:text-6xl">
+              <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-emerald-600">
+                My Position
+              </span>
+            </h1>
           </div>
-          <span class="mx-4 text-gray-500">to</span>
-          <div class="relative">
-            <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-              <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-              </svg>
-            </div>
-            <input id="datepicker-range-end" name="end" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Select date end">
-          </div>
-        </div>
-
-        <!-- Team Picker -->
-        <h3 class="mb-4 font-semibold text-gray-900 dark:text-white">Select Teams</h3>
-        <ul class="w-48 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-          {% for team in teams %}
-            <li class="w-full border-b border-gray-200 rounded-t-lg dark:border-gray-600">
-              <div class="flex items-center ps-3">
-                <input id="team{{ team.id }}-checkbox" type="checkbox" class="team-checkbox w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                <label for="team{{ team.id }}-checkbox" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">{{ team.name }}</label>
+  
+          <div class="max-w-xl w-full bg-white rounded-lg shadow dark:bg-gray-800 p-4 md:p-6">
+            <div class="flex justify-between border-gray-200 border-b dark:border-gray-700 pb-3">
+              <dl>
+                <dt class="text-base font-normal text-gray-500 dark:text-gray-400 pb-1">Profit</dt>
+                <dd class="leading-none text-3xl font-bold text-gray-900 dark:text-white">${{ profit }}</dd>
+              </dl>
+              <div>
+                <span class="bg-green-100 text-green-800 text-xs font-medium inline-flex items-center px-2.5 py-1 rounded-md dark:bg-green-900 dark:text-green-300">
+                  <svg class="w-2.5 h-2.5 me-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13V1m0 0L1 5m4-4 4 4"/>
+                  </svg>
+                  Profit rate {{ profit_ratio }}%
+                </span>
               </div>
-            </li>
-          {% endfor %}
-        </ul>
-
-        <!-- Placeholder for Graph -->
-        <div id="graphs-container" class="mt-8">
-          <h3 class="text-xl font-bold text-gray-900 dark:text-white">Graphs</h3>
-          <!-- Donut Chart -->
-            <div id="donut-chart"></div>
+            </div>
+  
+            <div class="grid grid-cols-2 py-3">
+              <dl>
+                <dt class="text-base font-normal text-gray-500 dark:text-gray-400 pb-1">Income</dt>
+                <dd class="leading-none text-xl font-bold text-green-500 dark:text-green-400">${{ total_income }}</dd>
+              </dl>
+              <dl>
+                <dt class="text-base font-normal text-gray-500 dark:text-gray-400 pb-1">Expense</dt>
+                <dd class="leading-none text-xl font-bold text-red-600 dark:text-red-500">${{ total_expense }}</dd>
+              </dl>
+            </div>
+  
+            <div id="bar-chart"></div>
+            <div class="grid grid-cols-1 items-center border-gray-200 border-t dark:border-gray-700 justify-between">
+              <div class="flex justify-between items-center pt-5">
+                <!-- Dropdown button -->
+              </div>
+            </div>
+  
+            <h5 class="text-xl font-bold leading-none text-gray-900 dark:text-white mt-10">Expenses per Category</h5>
+            <div class="py-6" id="donut-chart"></div>
+  
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
-
+  </section>
+  
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const startDateInput = document.getElementById('datepicker-range-start');
-    const endDateInput = document.getElementById('datepicker-range-end');
-    const teamCheckboxes = document.querySelectorAll('.team-checkbox');
 
-    // Attach change event listeners to date inputs and checkboxes
-    startDateInput.addEventListener('change', triggerGraphUpdate);
-    endDateInput.addEventListener('change', triggerGraphUpdate);
+fetch("{% url 'tracker:monthly_report' %}")
+  .then(response => response.json())
+  .then(data => {
+    const months = data.map(item => item.month);
+    const incomeValues = data.map(item => item.income);
+    const expenseValues = data.map(item => item.expense);
 
-    teamCheckboxes.forEach(checkbox => {
-      checkbox.addEventListener('change', triggerGraphUpdate);
-    });
-
-    // Function to handle the graph update trigger
-    function triggerGraphUpdate() {
-      const selectedTeams = getSelectedTeams();
-      const startDate = formatDate(startDateInput.value);
-      const endDate = formatDate(endDateInput.value);
-
-      console.log('Selected teams:', selectedTeams);
-      console.log('Date range:', startDate, 'to', endDate);
-
-      fetchGraphsData(selectedTeams, startDate, endDate);
-    }
-
-    // Function to get the selected teams
-    function getSelectedTeams() {
-      return Array.from(teamCheckboxes)
-        .filter(checkbox => checkbox.checked)
-        .map(checkbox => {
-          // Extract the numeric team ID from the 'id' attribute of the checkbox
-          const teamId = checkbox.id.split('-')[0].replace('team', ''); // Removes 'team' prefix
-          return parseInt(teamId, 10); // Convert to a number
-        });
-    }
-
-    // Function to format the date to 'YYYY-MM-DD' format
-    function formatDate(dateString) {
-      const date = new Date(dateString);
-      const year = date.getFullYear();
-      const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Add leading zero if needed
-      const day = date.getDate().toString().padStart(2, '0'); // Add leading zero if needed
-      return `${year}-${month}-${day}`;
-    }
-
-    // Function to fetch graph data from the server
-    function fetchGraphsData(teams, startDate, endDate) {
-      console.log('Fetching data for:', { teams, startDate, endDate });
-
-      // Send GET request to the backend
-      fetch("{% url 'tracker:get_graph_data' %}?start_date=" + startDate + "&end_date=" + endDate + "&team_ids=" + teams.join(','))
-        .then(response => response.json())
-        .then(data => {
-          if (data && data.total_spent_per_team) {
-            // Process data and create the donut chart
-            const teamNames = data.total_spent_per_team.map(item => item.team);
-            const amounts = data.total_spent_per_team.map(item => item.total_spent);
-
-            const donutChartOptions = {
-                series: amounts,
-                labels: teamNames,
-                chart: {
-                    type: 'donut',
-                    height: 320,
-                    width: '100%',
-                },
-                colors: ["#1C64F2", "#16BDCA", "#FDBA8C", "#E74694"],
-                plotOptions: {
-                    pie: {
-                        donut: {
-                            labels: {
-                                show: true,
-                                name: {
-                                    show: true,
-                                    fontFamily: "Inter, sans-serif",
-                                    offsetY: 20,
-                                },
-                                total: {
-                                    showAlways: true,
-                                    show: true,
-                                    label: "Total spent",
-                                    fontFamily: "Inter, sans-serif",
-                                    formatter: function (w) {
-                                        const sum = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
-                                        return '$' + sum.toFixed(2);
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
-            };
-
-            const donutChart = new ApexCharts(document.getElementById("donut-chart"), donutChartOptions);
-            donutChart.render();
-          } else {
-            console.error('Invalid data format:', data);
+    const options = {
+      series: [
+        {
+          name: "Income",
+          color: "#31C48D",
+          data: incomeValues,
+        },
+        {
+          name: "Expense",
+          data: expenseValues,
+          color: "#F05252",
+        }
+      ],
+      chart: {
+        type: "bar",
+        height: 400,
+        toolbar: { show: false },
+      },
+      xaxis: {
+        categories: months,
+      },
+      yaxis: {
+        labels: {
+          formatter: function (value) {
+            return "$" + value;
           }
-        })
-        .catch(error => {
-          console.error('Error fetching graph data:', error);
-        });
+        }
+      },
+      tooltip: {
+        shared: true,
+        intersect: false,
+        formatter: function (value) {
+          return "$" + value;
+        }
+      },
+    };
+
+    if (document.getElementById("bar-chart") && typeof ApexCharts !== 'undefined') {
+      const chart = new ApexCharts(document.getElementById("bar-chart"), options);
+      chart.render();
     }
   });
-</script>
+  fetch("{% url 'tracker:category_report' %}")
+  .then((response) => response.json())
+  .then((data) => {
+    // Prepare data for the donut chart
+    const categories = data.map((item) => item.category);
+    const expenses = data.map((item) => parseFloat(item.expense));
 
+    // Configure the donut chart
+    const options = {
+      series: expenses,
+      colors: [
+        "#1C64F2", // Blue
+        "#16BDCA", // Cyan
+        "#FDBA8C", // Peach
+        "#E74694", // Pink
+        "#8B5CF6", // Purple
+        "#FACC15", // Yellow
+        "#10B981", // Green
+        "#F43F5E", // Red
+        "#6366F1", // Indigo
+        "#F472B6", // Light pink
+        "#3B82F6", // Sky blue
+        "#22C55E", // Emerald
+        "#9333EA", // Violet
+        "#EC4899", // Hot pink
+        "#F59E0B", // Amber
+        "#6EE7B7", // Teal
+        "#EF4444", // Red-500
+        "#60A5FA", // Light blue
+        "#9D174D", // Crimson
+        "#3F6212"  // Olive green
+        ],
+      chart: {
+        height: 320,
+        width: "100%",
+        type: "donut",
+      },
+      plotOptions: {
+        pie: {
+          donut: {
+            labels: {
+              show: true,
+              name: {
+                show: true,
+                fontFamily: "Inter, sans-serif",
+                offsetY: 20,
+              },
+              total: {
+                showAlways: true,
+                show: true,
+                label: "Total Expenses",
+                fontFamily: "Inter, sans-serif",
+                formatter: function (w) {
+                  const sum = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                  return "$" + sum.toFixed(2);
+                },
+              },
+              value: {
+                show: true,
+                fontFamily: "Inter, sans-serif",
+                offsetY: -20,
+                formatter: function (value) {
+                  return "$" + value.toFixed(2);
+                },
+              },
+            },
+            size: "80%",
+          },
+        },
+      },
+      labels: categories,
+      legend: {
+        position: "bottom",
+        fontFamily: "Inter, sans-serif",
+      },
+      dataLabels: {
+        enabled: false,
+      },
+    };
+
+    // Render the chart if the container exists
+    if (document.getElementById("donut-chart") && typeof ApexCharts !== "undefined") {
+      const chart = new ApexCharts(document.getElementById("donut-chart"), options);
+      chart.render();
+    }
+  })
+  .catch((error) => console.error("Error fetching data:", error));
+
+
+</script>
 {% endblock %}

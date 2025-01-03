@@ -9,6 +9,7 @@ from django.core.exceptions import ValidationError
 from .models import Transaction, Contribution, Subscription, Goals
 from .forms import TransactionForm, ContributionForm, SubscriptionForm, GoalForm
 from user.models import Team
+from decimal import Decimal
 
 
 
@@ -651,3 +652,94 @@ def export_transactions(request, interval):
     # Save the workbook to the response
     wb.save(response)
     return response
+
+
+
+@login_required
+def graphs(request):
+    current_year = datetime.now().year
+
+    # Fetch transactions and contributions for the user with the date filter
+    transactions_pure = Transaction.objects.filter(user=request.user, team__isnull=True, date__year=current_year)
+    contributions = Contribution.objects.filter(user=request.user, transaction__date__year=current_year)
+
+    # Calculate totals
+    total_income = sum(transaction.amount for transaction in transactions_pure if transaction.transaction_type == 'add')
+    total_expense = sum(transaction.amount for transaction in transactions_pure if transaction.transaction_type == 'expense')
+    total_income += sum(contribution.amount for contribution in contributions if contribution.transaction.transaction_type == 'add')
+    total_expense += sum(contribution.amount for contribution in contributions if contribution.transaction.transaction_type == 'expense')
+
+    profit = total_income - total_expense
+    profit_ratio = (profit / total_income) * 100 if total_income > 0 else 0
+
+    return render(request, 'graphs.html', {
+        'total_income': total_income,
+        'total_expense': total_expense,
+        'profit': profit,
+        'profit_ratio': profit_ratio
+    })
+
+
+@login_required
+def get_monthly_balance_data(request):
+    current_year = datetime.now().year
+    # Fetch transactions and contributions
+    transactions_pure = Transaction.objects.filter(user=request.user, team__isnull=True, date__year=current_year)
+    contributions = Contribution.objects.filter(user=request.user, transaction__date__year=current_year)
+
+    monthly_balance = {month: {'income': 0, 'expense': 0} for month in range(1, 13)}
+
+    for transaction in transactions_pure:
+        month = transaction.date.month
+        if transaction.transaction_type == 'add':
+            monthly_balance[month]['income'] += transaction.amount
+        elif transaction.transaction_type == 'expense':
+            monthly_balance[month]['expense'] += transaction.amount
+
+    for contribution in contributions:
+        month = contribution.transaction.date.month
+        if contribution.transaction.transaction_type == 'add':
+            monthly_balance[month]['income'] += contribution.amount
+        elif contribution.transaction.transaction_type == 'expense':
+            monthly_balance[month]['expense'] += contribution.amount
+
+    balance_data = [
+        {
+            'month': datetime(current_year, month, 1).strftime('%b'),
+            'income': monthly_balance[month]['income'],
+            'expense': monthly_balance[month]['expense'],
+        }
+        for month in range(1, 13)
+    ]
+
+    return JsonResponse(balance_data, safe=False)
+
+
+@login_required
+def get_expense_per_category(request):
+
+    current_year = datetime.now().year
+    
+
+    transactions_pure = Transaction.objects.filter(user=request.user, team__isnull=True, date__year=current_year, transaction_type='expense')
+    contributions = Contribution.objects.filter(user=request.user, transaction__date__year=current_year, transaction__transaction_type='expense')
+
+    category_expenses = {}
+
+    for transaction in transactions_pure:
+        category = transaction.category
+        category_expenses[category] = category_expenses.get(category, 0) + transaction.amount
+
+    for contribution in contributions:
+        category = contribution.transaction.category
+        category_expenses[category] = category_expenses.get(category, 0) + contribution.amount
+
+    expense_data = [
+        {
+            'category': category,
+            'expense': float(amount),
+        }
+        for category, amount in category_expenses.items()
+    ]
+    print(f'{expense_data} some')
+    return JsonResponse(expense_data, safe=False)

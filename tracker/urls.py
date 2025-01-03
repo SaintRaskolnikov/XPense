@@ -24,5 +24,8 @@ urlpatterns = [
     path('goals-create/', views.create_goal, name='create_goal'),
     path('goals-edit/<int:pk>/', views.edit_goal, name='edit_goal'),
     path('goals-delete/<int:pk>/', views.delete_goal, name='delete_goal'),
+    path('monthly-report/', views.get_monthly_balance_data, name='monthly_report'),
+    path('category-report/', views.get_expense_per_category, name='category_report'),
+    path('integrated-position/', views.graphs, name='integrated_position'),
 
 ]
