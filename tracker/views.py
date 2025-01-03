@@ -160,6 +160,9 @@ def get_balance_data(request):
 def add_transaction(request):
     category_choices = Transaction.load_choices('category.json')  # Assuming you're loading categories from a JSON
     if request.method == 'POST':
+        amount = request.POST.get('amount')
+        amount = amount.replace(',', '.')  # Convert comma to period
+        amount = float(amount)  # Convert to float after the replacement
         form = TransactionForm(request.POST)
         if form.is_valid():
 

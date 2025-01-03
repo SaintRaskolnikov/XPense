@@ -16,7 +16,7 @@
               <!-- User Contribution Amount -->
               <div class="col-span-2 sm:col-span-1">
                 <label for="amount_{{ member.id }}" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">{{ member.username }}'s Contribution</label>
-                <input type="number" id="amount_{{ member.id }}" name="amount_{{ member.id }}" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-primary-500 dark:focus:ring-primary-500" required value="{{ amount_per_member }}" />
+                <input type="number" id="amount_{{ member.id }}" step="0.01" name="amount_{{ member.id }}" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-primary-500 dark:focus:ring-primary-500" required value="{{ amount_per_member }}" />
               </div>
 
               <!-- Hidden Fields for Transaction and User -->

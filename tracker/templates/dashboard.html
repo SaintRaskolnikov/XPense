@@ -185,12 +185,14 @@
                                 
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ transaction.transaction.date|date:"Y-m-d H:i" }}</td>
-                            {% if transaction.transaction.creator == request.user %}
+                            
                               <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                                   <a href="{% url 'tracker:edit_transaction' transaction_hash=transaction.transaction.transaction_hash %}">Edit</a>
+                              {% if transaction.transaction.user == request.user %}
                                   <a href="{% url 'tracker:delete_transaction' transaction_hash=transaction.transaction.transaction_hash %}" class="text-red-600 dark:text-red-400">Delete</a>
+                              {% endif %}
                               </td>
-                            {% endif %}
+                            
                         </tr>
                         {% endif %}
                       {% endfor %}
