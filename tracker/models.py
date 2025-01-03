@@ -8,7 +8,7 @@ import json
 import os
 import uuid
 from encrypted_model_fields.fields import EncryptedCharField, EncryptedTextField
-
+from django.core.exceptions import ValidationError
 
 
 class Transaction(models.Model):
@@ -28,6 +28,7 @@ class Transaction(models.Model):
 
     TRANSACTION_TYPES = [
         ('expense', 'Expense'),
+        ('expense', 'Take from balance'),
         ('add', 'Add to balance')
         
     ]
@@ -179,9 +180,25 @@ class Subscription(models.Model):
 
         super().save(*args, **kwargs)
     
+
 class Goals(models.Model):
+    @staticmethod
+    def load_choices(file_name):
+        choices_file = os.path.join(settings.BASE_DIR, 'choices', file_name)
+        if not os.path.exists(choices_file):
+            return []
+        try:
+            with open(choices_file, 'r') as f:
+                choices_list = json.load(f)
+            return [(item['code'], item['description']) for item in choices_list]
+        except (json.JSONDecodeError, KeyError):
+            return []
+
+    CATEGORY_CHOICES = load_choices.__func__('category.json')
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     name = EncryptedCharField(max_length=255)
+    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
     description = EncryptedTextField(blank=True, null=True)
     target_amount = models.DecimalField(max_digits=10, decimal_places=2)
     current_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
@@ -200,15 +217,26 @@ class Goals(models.Model):
     
     def get_progress(self):
         """Calculate the progress percentage of the goal."""
-        if self.current_amount >= self.target_amount:
-            return 100
+        #if self.current_amount >= self.target_amount:
+            #return 100
         return round((self.current_amount / self.target_amount) * 100, 2)
     
     def save(self, *args, **kwargs):
+        # Ensure category is not empty before proceeding
+        if not self.category:
+            raise ValidationError("Category cannot be empty.")
+
+        # Ensure only one active goal per category for each user
+    # Check if we are creating a new goal, not updating an existing one
+        if not self.pk:  # Only validate for active goals if this is a new goal
+            # Ensure only one active goal per category for each user
+            if not self.is_completed:
+                existing_goals = Goals.objects.filter(user=self.user, category=self.category, is_completed=False)
+                if existing_goals.exists():
+                    raise ValidationError(f"You already have an active goal in the '{self.category}' category.")
+
+        # Automatically mark the goal as completed if the current_amount reaches or exceeds the target_amount
         if self.current_amount >= self.target_amount:
             self.is_completed = True
 
         super().save(*args, **kwargs)
-    
-    def __str__(self):
-        return f"{self.name} - {self.user.username}"

@@ -1,37 +1,29 @@
-
-from django.contrib.auth.decorators import login_required
-from django.db import transaction as db_transaction
-from django.http import JsonResponse
-from .models import Transaction, Contribution, Subscription, Goals
-from user.models import Team, CustomUser
-from django.http import Http404
-from .forms import TransactionForm, ContributionForm, SubscriptionForm
+from datetime import datetime, timedelta
+from django.utils.timezone import now, make_aware, is_naive
 from django.shortcuts import render, get_object_or_404, redirect
-import json
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse, Http404, HttpResponseForbidden
+from django.db import transaction as db_transaction
 from django.contrib import messages
-from django.http import HttpResponseForbidden
-from datetime import timedelta
-from django.utils import timezone
-from datetime import datetime
-from django.utils.dateparse import parse_datetime
+from django.core.exceptions import ValidationError
+from .models import Transaction, Contribution, Subscription, Goals
+from .forms import TransactionForm, ContributionForm, SubscriptionForm, GoalForm
+from user.models import Team
 
 
-from django.utils.timezone import now
 
 @login_required
 def dashboard(request):
     today = now()
 
-    # Set the default start date to the first of the current month
+    # Default start and end dates
     default_start_date = today.replace(day=1)
-    # Set the default end date to today
     default_end_date = today
 
-    # Get the start and end dates from the request or use the defaults
+    # Parse start and end dates from GET params
     start_date_str = request.GET.get('start', default_start_date.strftime('%Y-%m-%d'))
     end_date_str = request.GET.get('end', default_end_date.strftime('%Y-%m-%d'))
 
-    # Parse the dates from the request
     try:
         start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
     except (ValueError, TypeError):
@@ -39,20 +31,16 @@ def dashboard(request):
         start_date_str = default_start_date.strftime('%Y-%m-%d')
 
     try:
-        end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
-        end_date = end_date + timedelta(days=1) - timedelta(seconds=1)
+        end_date = datetime.strptime(end_date_str, '%Y-%m-%d') + timedelta(days=1) - timedelta(seconds=1)
     except (ValueError, TypeError):
         end_date = default_end_date
         end_date_str = default_end_date.strftime('%Y-%m-%d')
 
-    # Fetch transactions and contributions for the user
+    # Fetch transactions and contributions
     transactions_pure = Transaction.objects.filter(user=request.user, team__isnull=True)
-    for transaction in transactions_pure:
-        print(f' dates {transaction.date}')
-    
     contributions = Contribution.objects.filter(user=request.user)
 
-    # Apply date range filter if both start and end dates are provided
+    # Apply date filters
     if start_date:
         transactions_pure = transactions_pure.filter(date__gte=start_date)
         contributions = contributions.filter(transaction__date__gte=start_date)
@@ -60,60 +48,66 @@ def dashboard(request):
         transactions_pure = transactions_pure.filter(date__lte=end_date)
         contributions = contributions.filter(transaction__date__lte=end_date)
 
-    transactions_pure = transactions_pure.order_by('-date')
-
+    # Prepare subscription warnings
     subs_renewal_warning = []
     subscriptions = Subscription.objects.filter(user=request.user)
     for subscription in subscriptions:
-        next = subscription.get_next_transaction_date()
-        if next and timezone.is_naive(next):
-            next = timezone.make_aware(next)
-        if next <= today:
-            subs_renewal_warning.append(subscription)
+        next_due_date = subscription.get_next_transaction_date()
+        if next_due_date:
+            if is_naive(next_due_date):
+                next_due_date = make_aware(next_due_date)
+            if next_due_date <= today:
+                subs_renewal_warning.append(subscription)
 
-    print(f'{transactions_pure} 2pure')
-    contributions = contributions.order_by('-transaction__date')
+    # Calculate balance
+    current_balance = calculate_balance(transactions_pure, contributions)
 
-    # Initialize balance
-    current_balance = 0
+    # Combine and sort transactions and contributions
+    transactions = merge_and_sort_transactions(transactions_pure, contributions)
 
-    # Calculate balance based on transaction type
+    # Render the template
+    return render(request, 'dashboard.html', {
+        'current_balance': current_balance,
+        'transactions': transactions,
+        'start_date': start_date_str,
+        'end_date': end_date_str,
+        'subs_renewal_warning': subs_renewal_warning,
+    })
+
+
+# Helper Function 1: Calculate Balance
+def calculate_balance(transactions_pure, contributions):
+    balance = 0
     for transaction in transactions_pure:
         if transaction.transaction_type == 'add':
-            current_balance += transaction.amount
+            balance += transaction.amount
         elif transaction.transaction_type == 'expense':
-            current_balance -= transaction.amount
+            balance -= transaction.amount
 
     for contribution in contributions:
         if contribution.transaction.transaction_type == 'add':
-            current_balance += contribution.amount
+            balance += contribution.amount
         elif contribution.transaction.transaction_type == 'expense':
-            current_balance -= contribution.amount
+            balance -= contribution.amount
 
-    # Merge transactions and contributions into one list
+    return balance
+
+
+# Helper Function 2: Merge and Sort Transactions
+def merge_and_sort_transactions(transactions_pure, contributions):
     combined_transactions = list(transactions_pure) + list(contributions)
-
-    # Sort combined transactions by date (considering contribution's related transaction date)
-    transactions = sorted(
+    return sorted(
         combined_transactions,
         key=lambda x: x.date if isinstance(x, Transaction) else x.transaction.date,
         reverse=True
     )
-    print(transactions)
-    # Return the rendered template with the context
-    return render(request, 'dashboard.html', {
-        'current_balance': current_balance,
-        'transactions': transactions,
-        'start_date': start_date_str,  # Pass the formatted date for the date input
-        'end_date': end_date_str,      # Pass the formatted date for the date input
-        'subs_renewal_warning': subs_renewal_warning,
-    })
+
 
 
 @login_required
 def get_balance_data(request):
     # Get today's date
-    today = timezone.now()
+    today = now()
 
     # Get the date 30 days ago
     thirty_days_ago = today - timedelta(days=7)
@@ -166,9 +160,6 @@ def add_transaction(request):
     category_choices = Transaction.load_choices('category.json')  # Assuming you're loading categories from a JSON
     if request.method == 'POST':
         form = TransactionForm(request.POST)
-        print(form)  # For debugging, remove in production
-
-
         if form.is_valid():
 
             with db_transaction.atomic():  # Ensure atomicity
@@ -177,8 +168,18 @@ def add_transaction(request):
                 transaction.user = request.user  # Assign current user as creator
                 transaction.save()  # Save transaction first
                 transaction_hash = transaction.transaction_hash
+
                 if transaction.team:
                     return redirect('tracker:add_contribution', transaction_hash=transaction_hash)  # Replace with your URL name for success page
+                else:
+                    # Update goals with the same category
+                    goals_with_same_category = Goals.objects.filter(user=request.user, category=transaction.category)
+                    for goal in goals_with_same_category:
+                        
+                        goal.current_amount += transaction.amount
+                        if goal.current_amount >= goal.target_amount:
+                            goal.is_completed = True
+                        goal.save()
 
         return redirect('tracker:dashboard')
 
@@ -225,6 +226,14 @@ def add_contribution(request, transaction_hash):
                     contribution.user = member
                     contribution.transaction = transaction
                     contribution.save()
+                                    # Update goals with the same category
+                    goals_with_same_category = Goals.objects.filter(user=member, category=transaction.category)
+                    for goal in goals_with_same_category:
+                        
+                        goal.current_amount += transaction.amount
+                        if goal.current_amount >= goal.target_amount:
+                            goal.is_completed = True
+                        goal.save()
                 else:
                     print(f"Form invalid for {member.username}, errors: {form.errors}")
 
@@ -300,10 +309,66 @@ def delete_transaction(request, transaction_hash):
     return render(request, 'delete_transaction.html', {'transaction': transaction})
 
 @login_required
-def goals_view(request):
+def goals_progress(request):
     goals = Goals.objects.filter(user=request.user)
 
-    return render(request, 'goals.html')
+    return render(request, 'list_goals.html', context={'goals': goals})
+
+@login_required
+def create_goal(request):
+    if request.method == "POST":
+        form = GoalForm(request.POST)
+        if form.is_valid():
+            goal = form.save(commit=False)
+            goal.user = request.user  # Assign the current logged-in user to the goal
+            try:
+                goal.save()  # This will trigger the validation in the model's save method
+                messages.success(request, 'Goal created successfully!')
+                return redirect('tracker:goals_progress')  # Redirect to a goal list or another appropriate page
+            except ValidationError as e:
+                # If a ValidationError is raised, add it to the form's errors
+                form.add_error(None, e.message)
+                messages.error(request, e.message)  # Pass the error message to the user
+        else:
+            messages.error(request, 'There was an error with your form submission. Please try again.')
+    else:
+        form = GoalForm()
+
+    category_choices = Goals.CATEGORY_CHOICES
+    return render(request, 'add_goal.html', {'form': form, "category_choices": category_choices})
+
+@login_required
+def edit_goal(request, pk):
+    goal = get_object_or_404(Goals, id=pk, user=request.user)
+    
+    if request.method == "POST":
+        form = GoalForm(request.POST, instance=goal)
+        if form.is_valid():
+            try:
+                form.save()
+                messages.success(request, 'Goal updated successfully!')
+                return redirect('tracker:goals_progress')  # Redirect to a list or detail page
+            except ValidationError as e:
+                # If a ValidationError is raised, add it to the form's errors
+                form.add_error(None, e.message)
+                messages.error(request, e.message)  # Pass the error message to the user
+        else:
+            messages.error(request, 'There was an error with your form submission. Please try again.')
+    else:
+        form = GoalForm(instance=goal)
+
+    category_choices = Goals.CATEGORY_CHOICES
+    return render(request, 'edit_goal.html', {'form': form, 'goal': goal, "category_choices": category_choices})
+
+def delete_goal(request, pk):
+    goal = get_object_or_404(Goals, id=pk)
+
+    if request.method == 'POST':
+        goal.delete()
+        messages.success(request, 'Goal deleted successfully.')
+        return redirect('tracker:goals_progress')  # Redirect to the goal list after deletion
+
+    return render(request, 'delete_goal.html', {'goal': goal})
 
 @login_required
 def get_graph_data(request):
@@ -313,12 +378,12 @@ def get_graph_data(request):
 
     # Parse the start and end date if provided
     if start_date and end_date:
-        start_date = timezone.datetime.strptime(start_date, '%Y-%m-%d')
-        end_date = timezone.datetime.strptime(end_date, '%Y-%m-%d')
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
+        end_date = datetime.strptime(end_date, '%Y-%m-%d')
         print(f"Parsed Start Date: {start_date}, Parsed End Date: {end_date}")
     else:
         # Default to the last 7 days if no date range is provided
-        end_date = timezone.now()
+        end_date = now()
         start_date = end_date - timedelta(days=7)
 
     # Get the selected team IDs from the request
@@ -509,13 +574,13 @@ from django.utils.timezone import localtime
 def export_transactions(request, interval):
     # Get the start and end dates based on the interval
     if interval == 'current_month':
-        start_date = timezone.now().replace(day=1)
+        start_date = now().replace(day=1)
     elif interval == 'current_year':
-        start_date = timezone.now().replace(month=1, day=1)
+        start_date = now().replace(month=1, day=1)
     elif interval == 'last_year':
-        start_date = timezone.now().replace(year=timezone.now().year - 1, month=1, day=1)
+        start_date = now().replace(year=now().year - 1, month=1, day=1)
     elif interval == 'last_month':
-        start_date = timezone.now().replace(month=timezone.now().month - 1, day=1)
+        start_date = now().replace(month=now().month - 1, day=1)
     else:
         start_date = None
 
