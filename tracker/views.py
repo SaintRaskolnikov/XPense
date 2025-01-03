@@ -518,8 +518,8 @@ def user_subscriptions(request):
     
     # Calculate monthly and annual expected spend
     daily_spend = 0
-    weekly_spend = 0
-    monthly_spend = 0
+    weekly_spend = 0 + daily_spend
+    monthly_spend = 0 + weekly_spend
     annual_spend = 0
 
     for subscription in subscriptions:
@@ -527,12 +527,15 @@ def user_subscriptions(request):
             daily_spend += subscription.amount * 30
         elif subscription.periodicity == 'weekly':
             weekly_spend += subscription.amount * 4
+
         elif subscription.periodicity == 'monthly':
             monthly_spend += subscription.amount
         elif subscription.periodicity == 'annual':
             annual_spend += subscription.amount / 12  # Divide by 12 to get monthly equivalent
 
     # Calculate annual total spend (monthly spend + annual subscriptions)
+    weekly_spend += daily_spend
+    monthly_spend += weekly_spend
     total_annual_spend = monthly_spend * 12 + annual_spend
 
     return render(request, 'list_subscriptions.html', {
