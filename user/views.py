@@ -102,7 +102,7 @@ def delete_profile(request):
         logout(request)  # Log the user out after account deletion
         return redirect('user:login')  # Redirect to the login page after deletion
 
-    return render(request, 'user/delete_profile.html', {'user': user})
+    return render(request, 'delete_user.html', {'user': user})
 
 
 @login_required
