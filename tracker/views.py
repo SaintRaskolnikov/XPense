@@ -39,7 +39,7 @@ def dashboard(request):
 
     # Fetch transactions and contributions
     transactions_pure = Transaction.objects.filter(user=request.user, team__isnull=True)
-    contributions = Contribution.objects.filter(user=request.user)
+    contributions = Contribution.objects.filter(user=request.user, excluded=False)
 
     # Apply date filters
     if start_date:
@@ -115,7 +115,7 @@ def get_balance_data(request):
 
     # Fetch transactions and contributions for the user within the last 30 days
     transactions_pure = Transaction.objects.filter(user=request.user, team__isnull=True, date__gte=thirty_days_ago).order_by('date')
-    contributions = Contribution.objects.filter(user=request.user, transaction__date__gte=thirty_days_ago).order_by('transaction__date')
+    contributions = Contribution.objects.filter(user=request.user, transaction__date__gte=thirty_days_ago, excluded=False).order_by('transaction__date')
 
     # Initialize balance
     current_balance = 0
@@ -208,7 +208,7 @@ def add_contribution(request, transaction_hash):
             amount = request.POST.get(f'amount_{member.id}')
             if amount:
                 # Check if a contribution for this user and transaction already exists
-                existing_contribution = Contribution.objects.filter(transaction=transaction, user=member).first()
+                existing_contribution = Contribution.objects.filter(transaction=transaction, user=member, excluded=False).first()
                 if existing_contribution:
                     # Delete the existing contribution
                     existing_contribution.delete()
@@ -313,6 +313,17 @@ def delete_transaction(request, transaction_hash):
 
     return render(request, 'delete_transaction.html', {'transaction': transaction})
 
+def exclude_contribution(request, pk):
+    contribution = get_object_or_404(Contribution, pk=pk)
+    
+    if request.method == 'POST':
+        # Exclude the contribution and redirect to the dashboard
+        contribution.exclude()
+        return redirect('tracker:dashboard')
+    
+    # Render a confirmation page for GET requests
+    return render(request, 'exclude_contribution.html', {'contribution': contribution})
+
 @login_required
 def goals_progress(request):
     goals = Goals.objects.filter(user=request.user)
@@ -407,6 +418,7 @@ def get_graph_data(request):
 
     contributions = Contribution.objects.filter(
         user=request.user,
+        excluded=False,
         transaction__date__range=[start_date, end_date],
         transaction__team__id__in=selected_team_ids
     ).order_by('transaction__date')
@@ -601,6 +613,7 @@ def export_transactions(request, interval):
 
     contributions = Contribution.objects.filter(
         user=request.user,
+        excluded=False,
         transaction__date__gte=start_date
     ).order_by('transaction__date')
 
@@ -665,7 +678,7 @@ def graphs(request):
 
     # Fetch transactions and contributions for the user with the date filter
     transactions_pure = Transaction.objects.filter(user=request.user, team__isnull=True, date__year=current_year)
-    contributions = Contribution.objects.filter(user=request.user, transaction__date__year=current_year)
+    contributions = Contribution.objects.filter(user=request.user, transaction__date__year=current_year, excluded=False)
 
     # Calculate totals
     total_income = sum(transaction.amount for transaction in transactions_pure if transaction.transaction_type == 'add')
@@ -689,7 +702,7 @@ def get_monthly_balance_data(request):
     current_year = datetime.now().year
     # Fetch transactions and contributions
     transactions_pure = Transaction.objects.filter(user=request.user, team__isnull=True, date__year=current_year)
-    contributions = Contribution.objects.filter(user=request.user, transaction__date__year=current_year)
+    contributions = Contribution.objects.filter(user=request.user, transaction__date__year=current_year, excluded=False)
 
     monthly_balance = {month: {'income': 0, 'expense': 0} for month in range(1, 13)}
 
@@ -726,7 +739,7 @@ def get_expense_per_category(request):
     
 
     transactions_pure = Transaction.objects.filter(user=request.user, team__isnull=True, date__year=current_year, transaction_type='expense')
-    contributions = Contribution.objects.filter(user=request.user, transaction__date__year=current_year, transaction__transaction_type='expense')
+    contributions = Contribution.objects.filter(user=request.user, transaction__date__year=current_year, transaction__transaction_type='expense', excluded=False)
 
     category_expenses = {}
 

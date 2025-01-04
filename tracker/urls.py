@@ -27,5 +27,6 @@ urlpatterns = [
     path('monthly-report/', views.get_monthly_balance_data, name='monthly_report'),
     path('category-report/', views.get_expense_per_category, name='category_report'),
     path('integrated-position/', views.graphs, name='integrated_position'),
+    path('exclude-contribution/<int:pk>/', views.exclude_contribution, name='exclude_contribution'),
 
 ]

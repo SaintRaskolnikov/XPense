@@ -65,6 +65,11 @@ class Contribution(models.Model):
     transaction = models.ForeignKey(Transaction, on_delete=models.CASCADE, related_name='contributions')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='contributions')
     amount = models.DecimalField(max_digits=10, decimal_places=2)
+    excluded = models.BooleanField(default=False)
+
+    def exclude(self):
+        self.excluded = True
+        self.save()
 
 class ActiveSubscriptionManager(models.Manager):
     """Custom manager to filter active subscriptions."""

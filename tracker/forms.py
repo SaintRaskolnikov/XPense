@@ -21,6 +21,7 @@ class ContributionForm(forms.ModelForm):
         model = Contribution
         fields = ['user', 'amount']
 
+
 class SubscriptionForm(forms.ModelForm):
     class Meta:
         model = Subscription
