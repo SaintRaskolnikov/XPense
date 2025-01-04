@@ -195,7 +195,7 @@ def remove_user_from_team(request, team_code, pk):
     user_to_remove = get_object_or_404(team.users, pk=pk)
     
     # Only the team creator can remove users
-    if request.user != team.creator:
+    if request.user != team.creator or user_to_remove != request.user:
         print('not allowed')  # Assuming the first user is the creator
         return redirect('user:teams_list')
     
