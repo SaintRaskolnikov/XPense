@@ -51,7 +51,7 @@ def dashboard(request):
 
     # Prepare subscription warnings
     subs_renewal_warning = []
-    subscriptions = Subscription.objects.filter(user=request.user)
+    subscriptions = Subscription.objects.filter(user=request.user, is_active=True)
     for subscription in subscriptions:
         next_due_date = subscription.get_next_transaction_date()
         if next_due_date:
