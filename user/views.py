@@ -167,16 +167,6 @@ def join_team(request):
 
 
 @login_required
-def team_detail(request, team_code):
-    try:
-        team = Team.objects.get(team_code=team_code)
-        return render(request, 'team_detail.html', {'team': team})
-    except Team.DoesNotExist:
-        messages.error(request, "Team does not exist.")
-        return redirect('team:join_team')
-
-
-@login_required
 def teams_list(request):
     # Filter teams where the logged-in user is part of the team
     user_teams = request.user.teams.all()
@@ -189,11 +179,6 @@ def edit_team(request, team_code):
     team_pictures_dir = os.path.join(settings.MEDIA_ROOT, 'profile_pictures')
     team_pictures = [f for f in os.listdir(team_pictures_dir) if os.path.isfile(os.path.join(team_pictures_dir, f))]
 
-    # Check if the user is the creator
-    if request.user != team.creator:
-        messages.error(request, "You are not the creator of this Team.")
-        return redirect('user:teams_list')  # You can redirect to a team list or error page
-    
     if request.method == 'POST':
         form = TeamEditForm(request.POST, instance=team)
         if form.is_valid():
@@ -210,8 +195,9 @@ def remove_user_from_team(request, team_code, pk):
     user_to_remove = get_object_or_404(team.users, pk=pk)
     
     # Only the team creator can remove users
-    if request.user != team.users.first():  # Assuming the first user is the creator
-        return redirect('team_list')
+    if request.user != team.creator:
+        print('not allowed')  # Assuming the first user is the creator
+        return redirect('user:teams_list')
     
     # Remove the user from the team
     team.users.remove(user_to_remove)

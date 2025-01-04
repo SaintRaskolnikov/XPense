@@ -67,7 +67,7 @@
                             {{ user.email }}
                         </p>
                     </div>
-                    {% if user == team.users.first or request.user == user %}  <!-- Assuming the creator is the first user -->
+                    {% if user == team.users.creator or request.user == user %}  <!-- Assuming the creator is the first user -->
                         <div class="inline-flex items-center">
                             <form method="post" action="{% url 'user:remove_user_from_team' team_code=team.team_code pk=user.pk %}">
                                 {% csrf_token %}
