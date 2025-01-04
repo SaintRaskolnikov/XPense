@@ -158,7 +158,8 @@ def get_balance_data(request):
 
 @login_required
 def add_transaction(request):
-    category_choices = Transaction.load_choices('category.json')  # Assuming you're loading categories from a JSON
+    category_choices = Transaction.load_choices('category.json', language=request.user.language)  # Assuming you're loading categories from a JSON
+    print(f'{request.user.language} here')
     if request.method == 'POST':
         amount = request.POST.get('amount')
         amount = amount.replace(',', '.')  # Convert comma to period
@@ -188,7 +189,7 @@ def add_transaction(request):
         return redirect('tracker:dashboard')
 
     else:
-        form = TransactionForm()
+        form = TransactionForm(user=request.user)
 
     teams = Team.objects.filter(users=request.user)  # Assuming teams the user belongs to
     return render(request, 'add_transaction.html', {'form': form, 'teams': teams, 'category_choices': category_choices})
@@ -290,7 +291,7 @@ def edit_transaction(request, transaction_hash):
         form = TransactionForm(instance=transaction)
 
     teams = Team.objects.filter(users=request.user)  # Fetch teams the user is part of
-    category_choices = Transaction.CATEGORY_CHOICES  # Assuming you have category choices in the model
+    category_choices = Transaction.load_choices('category.json', language=request.user.language)  # Assuming you have category choices in the model
 
     return render(request, "edit_transaction.html", {
         "form": form,
@@ -336,9 +337,9 @@ def create_goal(request):
         else:
             messages.error(request, 'There was an error with your form submission. Please try again.')
     else:
-        form = GoalForm()
+        form = GoalForm(user=request.user)
 
-    category_choices = Goals.CATEGORY_CHOICES
+    category_choices = Goals.load_choices('category.json', language=request.user.language) 
     return render(request, 'add_goal.html', {'form': form, "category_choices": category_choices})
 
 @login_required
@@ -359,9 +360,9 @@ def edit_goal(request, pk):
         else:
             messages.error(request, 'There was an error with your form submission. Please try again.')
     else:
-        form = GoalForm(instance=goal)
+        form = GoalForm(instance=goal, user=request.user)
 
-    category_choices = Goals.CATEGORY_CHOICES
+    category_choices = Goals.load_choices('category.json', language=request.user.language) 
     return render(request, 'edit_goal.html', {'form': form, 'goal': goal, "category_choices": category_choices})
 
 def delete_goal(request, pk):
@@ -445,7 +446,7 @@ def get_graph_data(request):
 
 @login_required
 def create_subscriptions(request):
-    category_choices = Subscription.load_choices('category.json')
+    category_choices = Subscription.load_choices('category.json', request.user.language)    
     if request.method == 'POST':
         form = SubscriptionForm(request.POST)
         if form.is_valid():
@@ -454,7 +455,7 @@ def create_subscriptions(request):
             subscription.save()
             return redirect('tracker:user_subscriptions')
     else:
-        form = SubscriptionForm()
+        form = SubscriptionForm(user=request.user)
 
     subscriptions = Subscription.objects.filter(user=request.user)
     return render(request, 'add_subscription.html', {'form': form, 'subscriptions': subscriptions, 'category_choices': category_choices})
@@ -462,7 +463,7 @@ def create_subscriptions(request):
 @login_required
 def edit_subscription(request, subscription_id):
     # Get the subscription object or raise a 404 if not found
-    category_choices = Subscription.load_choices('category.json')
+    category_choices = Subscription.load_choices('category.json', request.user.language)
     subscription = get_object_or_404(Subscription, id=subscription_id)
     
     # Check if the subscription belongs to the current user
@@ -476,7 +477,7 @@ def edit_subscription(request, subscription_id):
             form.save()
             return redirect('tracker:user_subscriptions')
     else:
-        form = SubscriptionForm(instance=subscription)
+        form = SubscriptionForm(instance=subscription, user=request.user)
 
     return render(request, 'edit_subscription.html', {
         'form': form,

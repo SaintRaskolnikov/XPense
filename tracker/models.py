@@ -13,8 +13,9 @@ from django.core.exceptions import ValidationError
 
 class Transaction(models.Model):
     @staticmethod
-    def load_choices(file_name):
-        choices_file = os.path.join(settings.BASE_DIR, 'choices', file_name)
+    def load_choices(file_name, language):
+        choices_file = os.path.join(settings.BASE_DIR,'locale', str(language), 'choices', file_name)
+        print(choices_file)
         if not os.path.exists(choices_file):
             return []
         try:
@@ -24,7 +25,7 @@ class Transaction(models.Model):
         except (json.JSONDecodeError, KeyError):
             return []
 
-    CATEGORY_CHOICES = load_choices.__func__('category.json')
+    CATEGORY_CHOICES = load_choices.__func__('category.json', 'en') 
 
     TRANSACTION_TYPES = [
         ('expense', 'Expense'),
@@ -74,9 +75,9 @@ class Subscription(models.Model):
     """Model for managing user subscriptions."""
 
     @staticmethod
-    def load_choices(file_name):
-        """Loads choices dynamically from a JSON file."""
-        choices_file = os.path.join(settings.BASE_DIR, 'choices', file_name)
+    def load_choices(file_name, language):
+        choices_file = os.path.join(settings.BASE_DIR,'locale', str(language), 'choices', file_name)
+        print(choices_file)
         if not os.path.exists(choices_file):
             return []
         try:
@@ -86,9 +87,7 @@ class Subscription(models.Model):
         except (json.JSONDecodeError, KeyError):
             return []
 
-    CATEGORY_CHOICES = load_choices.__func__('category.json') or [
-        ('default', 'Default Category')  # Fallback option if JSON fails
-    ]
+    CATEGORY_CHOICES = load_choices.__func__('category.json', 'en') 
 
     PERIODICITY_CHOICES = [
         ('daily', 'Daily'),
@@ -183,8 +182,9 @@ class Subscription(models.Model):
 
 class Goals(models.Model):
     @staticmethod
-    def load_choices(file_name):
-        choices_file = os.path.join(settings.BASE_DIR, 'choices', file_name)
+    def load_choices(file_name, language):
+        choices_file = os.path.join(settings.BASE_DIR,'locale', str(language), 'choices', file_name)
+        print(choices_file)
         if not os.path.exists(choices_file):
             return []
         try:
@@ -194,7 +194,7 @@ class Goals(models.Model):
         except (json.JSONDecodeError, KeyError):
             return []
 
-    CATEGORY_CHOICES = load_choices.__func__('category.json')
+    CATEGORY_CHOICES = load_choices.__func__('category.json', 'en') 
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     name = EncryptedCharField(max_length=255)

@@ -8,7 +8,7 @@
       <div class="text-center mb-6">
         <h1 class="mb-4 text-3xl font-extrabold text-gray-900 dark:text-white md:text-5xl lg:text-6xl">
           <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-emerald-600">
-            Goals Progress
+            {{ t.goals_progress }}
           </span>
         </h1>
       </div>
@@ -16,7 +16,7 @@
       <!-- Add Goal Button -->
       <div class="flex flex-wrap gap-4 items-center justify-center mt-4">
         <a href="{% url 'tracker:create_goal' %}" class="text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800 font-medium rounded-lg px-6 py-3 text-center me-2 mb-2">
-          Add New Goal
+          {{ t.add_new_goal }}
         </a>
       </div>
 
@@ -37,18 +37,19 @@
               </div>
               <!-- Goal Details -->
               <div class="mt-4 text-sm text-gray-600 dark:text-gray-400">
-                <p><strong>Description:</strong> {{ goal.description|default:"No description provided" }}</p>
-                <p><strong>Target Amount:</strong> ${{ goal.target_amount|floatformat:2 }}</p>
-                <p><strong>Current Amount:</strong> ${{ goal.current_amount|floatformat:2 }}</p>
-                <p><strong>Target Date:</strong> {{ goal.target_date|date:"d/m/Y" }}</p>
+                <p><strong>{{ t.description }}:</strong> {{ goal.description|default:{{ t.no_description_provided }} }}</p>
+                <p><strong>{{ t.target_amount }}:</strong> ${{ goal.target_amount|floatformat:2 }}</p>
+                <p><strong>{{ t.current_amount }}:</strong> ${{ goal.current_amount|floatformat:2 }}</p>
+                <p><strong>{{ t.target_date }}:</strong> {{ goal.target_date|date:"d/m/Y" }}</p>
               </div>
             </div>
           {% endfor %}
         {% else %}
-          <p class="text-gray-600 dark:text-gray-400">No goals available.</p>
+          <p class="text-gray-600 dark:text-gray-400">{{ t.no_goals_available }}</p>
         {% endif %}
       </div>
     </div>
   </div>
 </section>
 {% endblock %}
+

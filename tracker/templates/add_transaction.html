@@ -5,7 +5,7 @@
     <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
       <div class="flex justify-center items-center">
         <div class="w-full max-w-lg">
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">Add Transaction</h2>
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">{{ t.add_transaction }}</h2>
 
           <div class="mt-6 sm:mt-8">
             <form action="{% url 'tracker:add_transaction' %}" method="POST" class="w-full rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:p-6 lg:p-8">
@@ -13,19 +13,19 @@
               <div class="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
                 <!-- Amount Input -->
                 <div>
-                  <label for="amount" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Amount*</label>
-                  <input type="number" id="amount" name="amount" step="0.01" name="amount" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-primary-500 dark:focus:ring-primary-500" placeholder="Enter amount" required />
+                  <label for="amount" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">{{ t.amount }}*</label>
+                  <input type="number" id="amount" name="amount" step="0.01" name="amount" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-primary-500 dark:focus:ring-primary-500" placeholder="{{ t.enter_amount }}" required />
                 </div>
 
                 <!-- Description Input -->
                 <div>
-                  <label for="description" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Description*</label>
-                  <input type="text" id="description" name="description" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-primary-500 dark:focus:ring-primary-500" placeholder="Description of the transaction" required />
+                  <label for="description" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">{{ t.description }}*</label>
+                  <input type="text" id="description" name="description" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-primary-500 dark:focus:ring-primary-500" placeholder="{{ t.description_transaction }}" required />
                 </div>
 
                 <!-- Category Select -->
                 <div>
-                  <label for="category" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Category*</label>
+                  <label for="category" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">{{ t.category }}*</label>
                   <select id="category" name="category" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-primary-500 dark:focus:ring-primary-500">
                     {% for choice in category_choices %}
                       <option value="{{ choice.0 }}">{{ choice.1 }}</option>
@@ -35,18 +35,18 @@
 
                 <!-- Transaction Type -->
                 <div>
-                  <label for="transaction_type" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Transaction Type</label>
+                  <label for="transaction_type" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">{{ t.transaction_type }}</label>
                   <select id="transaction_type" name="transaction_type" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-primary-500 dark:focus:ring-primary-500">
-                    <option value="add">Add to balance</option>
-                    <option value="expense">Expense</option>
+                    <option value="add">{{ t.add_to_balance }}</option>
+                    <option value="expense">{{ t.expense }}</option>
                   </select>
                 </div>
               </div>
 
               <div>
-                <label for="team" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Choose Team</label>
+                <label for="team" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">{{ t.choose_team }}</label>
                 <select id="team" name="team" data-team-code="" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-primary-500 dark:focus:ring-primary-500">
-                  <option value="">No Team</option>
+                  <option value="">{{ t.no_team }}</option>
                   {% for team in teams %}
                     <option value="{{ team.id }}" data-members-count="{{ team.users.count }}">{{ team.name }}</option>
                   {% endfor %}
@@ -54,7 +54,7 @@
               </div>
 
               <div class="mt-4">
-                <button id="submit" type="submit" class="w-full rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit Transaction</button>
+                <button id="submit" type="submit" class="w-full rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{{ t.submit_transaction }}</button>
               </div>
 
             </form>
@@ -64,3 +64,4 @@
     </div>
 </section>
 {% endblock %}
+

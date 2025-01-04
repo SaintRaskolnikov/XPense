@@ -1,7 +1,7 @@
 from django import forms
 from .models import Transaction, Contribution, Subscription, Goals
-from user.models import Team
-from django.forms import Select
+from django import forms
+from .models import Goals
 
 class TransactionForm(forms.ModelForm):
     class Meta:
@@ -14,7 +14,7 @@ class TransactionForm(forms.ModelForm):
         
         
         # Dynamically load the CATEGORY_CHOICES into the form
-        self.fields['category'].choices = Transaction.load_choices('category.json')
+        self.fields['category'].choices = Transaction.load_choices('category.json', user.language)
 
 class ContributionForm(forms.ModelForm):
     class Meta:
@@ -26,8 +26,13 @@ class SubscriptionForm(forms.ModelForm):
         model = Subscription
         fields = ['name', 'description', 'category', 'amount', 'periodicity', 'start_date', 'is_active']
 
-from django import forms
-from .models import Goals
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        
+        
+        # Dynamically load the CATEGORY_CHOICES into the form
+        self.fields['category'].choices = Subscription.load_choices('category.json', user.language)
 
 class GoalForm(forms.ModelForm):
     class Meta:
@@ -61,6 +66,13 @@ class GoalForm(forms.ModelForm):
                 'class': 'w-4 h-4 rounded border-gray-300 bg-gray-50 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:focus:ring-primary-600 dark:ring-offset-gray-800',
             }),
         }
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        
+        
+        # Dynamically load the CATEGORY_CHOICES into the form
+        self.fields['category'].choices = Goals.load_choices('category.json', user.language)
 
     def clean_target_amount(self):
         target_amount = self.cleaned_data.get('target_amount')

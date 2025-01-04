@@ -20,7 +20,6 @@
       <!-- Container with consistent width -->
       <div class="w-full">
 
-
         <div class="flex justify-center items-center min-h-screen bg-gray-100 dark:bg-gray-900">
           <div class="space-y-4">
             {% for subscription in subs_renewal_warning %}
@@ -30,31 +29,31 @@
                     <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
                       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 1v5h-5M2 19v-5h5m10-4a8 8 0 0 1-14.947 3.97M1 10a8 8 0 0 1 14.947-3.97" />
                     </svg>
-                    <span class="sr-only">Refresh icon</span>
+                    <span class="sr-only">{{ t.refresh_icon }}</span>
                   </div>
                   <div class="ml-4 text-sm">
                     <div class="font-semibold text-gray-900 dark:text-white">{{ subscription.name }}</div>
-                    <div class="mt-1 text-gray-600 dark:text-gray-400">This subscription is due, do you wish to renew it?</div>
+                    <div class="mt-1 text-gray-600 dark:text-gray-400">{{ t.subscription_due_message }}</div>
                     <div class="mt-3 grid grid-cols-2 gap-3">
                       <!-- Add and Renew Form -->
                       <form method="POST" action="{% url 'tracker:renew_subscription' subscription.id %}">
                         {% csrf_token %}
                         <button type="submit" class="w-full px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-800">
-                          Add, and renew
+                          {{ t.add_and_renew }}
                         </button>
                       </form>
                       <!-- Cancel Subscription Form -->
                       <form method="POST" action="{% url 'tracker:cancel_subscription' subscription.id %}">
                         {% csrf_token %}
                         <button type="submit" class="w-full px-3 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-800">
-                          Cancel subscription
+                          {{ t.cancel_subscription }}
                         </button>
                       </form>
                     </div>
                   </div>
                   <!-- Close Button -->
                   <button type="button" class="ml-auto p-2 text-gray-400 bg-transparent rounded-full hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:text-gray-500 dark:hover:text-white dark:focus:ring-gray-600" data-dismiss-target="#toast-interactive" aria-label="Close">
-                    <span class="sr-only">Close</span>
+                    <span class="sr-only">{{ t.close_button }}</span>
                     <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
                     </svg>
@@ -77,165 +76,129 @@
                 bg-gradient-to-r to-emerald-600 from-sky-400
               {% endif %}
             ">
-              Balance: ${{ current_balance|floatformat:2 }}
+              {{ t.balance }}: ${{ current_balance|floatformat:2 }}
             </span>
           </h1>
           
-
           <div id="area-chart-container" class="mx-auto max-w-full">
             <canvas id="area-chart"></canvas>
           </div>
         </div>
 
-<!-- Buttons Section -->
-<div class="flex flex-wrap gap-4 items-center justify-center mt-4">
-  <a href="{% url 'tracker:add_transaction' %}" class="text-white bg-gradient-to-r from-pink-400 via-pink-500 to-pink-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 font-medium rounded-lg px-5 py-2.5 text-center me-2 mb-2">
-    + Transaction
-  </a>
-  
-  <a href="{% url 'user:teams_list' %}" class="text-white bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-300 dark:focus:ring-teal-800 font-medium rounded-lg px-5 py-2.5 text-center me-2 mb-2">
-    Teams
-  </a>
+        <!-- Buttons Section -->
+        <div class="flex flex-wrap gap-4 items-center justify-center mt-4">
+          <a href="{% url 'tracker:add_transaction' %}" class="text-white bg-gradient-to-r from-pink-400 via-pink-500 to-pink-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 font-medium rounded-lg px-5 py-2.5 text-center me-2 mb-2">
+            {{ t.add_transaction }}
+          </a>
+          
+          <a href="{% url 'user:teams_list' %}" class="text-white bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-300 dark:focus:ring-teal-800 font-medium rounded-lg px-5 py-2.5 text-center me-2 mb-2">
+            {{ t.teams_button }}
+          </a>
 
-  <a href="{% url 'tracker:goals_progress' %}" class="text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg px-5 py-2.5 text-center me-2 mb-2">
-    Goals
-  </a>
-</div>
+          <a href="{% url 'tracker:goals_progress' %}" class="text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg px-5 py-2.5 text-center me-2 mb-2">
+            {{ t.goals_button }}
+          </a>
+        </div>
 
-
-
-<!-- Date Picker Section -->
-<div class="flex flex-wrap gap-4 items-center justify-center mt-4">
-  <form method="GET" action="{% url 'tracker:dashboard' %}" class="w-full md:w-auto">
-    <div class="flex flex-col md:flex-row items-center justify-center gap-4">
-      <!-- Start Date -->
-      <div class="relative">
-        <input id="start-date" name="start" type="date"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          value="{{ start_date }}">
-      </div>
-
-      <!-- "to" text -->
-      <span class="mx-4 text-gray-500">to</span>
-
-      <!-- End Date -->
-      <div class="relative">
-        <input id="end-date" name="end" type="date"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          value="{{ end_date }}">
-      </div>
-    </div>
-  </form>
-</div>
-
-
-
-  
-        <div class="mt-6 flex justify-center sm:mt-8">
-              {% if transactions %}
-              <div class="overflow-x-auto">
-              <table class="min-w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                      <tr>
-                          <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400">Description</th>
-                          <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400">Category</th>
-                          <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400">Amount</th>
-                          <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400">Date</th>
-                          <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400"></th>
-                      </tr>
-                  </thead>
-                  <tbody>
-                    {% for transaction in transactions %}
-                      {% if transaction.transaction_hash %}
-                        <tr class="bg-white dark:bg-gray-900">
-                            <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
-                                <p class="truncate">{{ transaction.description}}</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ transaction.user.username }}</p>
-                            </td>
-                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ transaction.category}}</td>
-                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                              {% if transaction.transaction_type == 'expense' %}
-                                  <span class="text-red-600 dark:text-red-400">$ -{{ transaction.amount }}</span>
-                              {% elif transaction.transaction_type == 'add' %}
-                                  <span class="text-green-600 dark:text-green-400">$ {{ transaction.amount }}</span>
-                              {% endif %}
-                                
-                            </td>
-                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ transaction.date|date:"Y-m-d H:i" }}</td>
-                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                                <a href="{% url 'tracker:edit_transaction' transaction_hash=transaction.transaction_hash %}">Edit</a>
-
-                                <a href="{% url 'tracker:delete_transaction' transaction_hash=transaction.transaction_hash %}" class="text-red-600 dark:text-red-400">Delete</a>
-                                
-                            </td>
-                        </tr>
-                        {% else %}
-                          <tr class="bg-white dark:bg-gray-900">
-                            <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
-                                <p class="truncate">{{ transaction.user.username }}</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ transaction.user.email }}</p>
-                            </td>
-                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ transaction.transaction.category }}</td>
-                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                              {% if transaction.transaction.transaction_type == 'expense' %}
-                                  <span class="text-red-600 dark:text-red-400">$ -{{ transaction.amount }}</span>
-                              {% elif transaction.transaction.transaction_type == 'add' %}
-                                  <span class="text-green-600 dark:text-green-400">$ {{ transaction.amount }}</span>
-                              {% endif %}
-                                
-                            </td>
-                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ transaction.transaction.date|date:"Y-m-d H:i" }}</td>
-                            
-                              <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                                  <a href="{% url 'tracker:edit_transaction' transaction_hash=transaction.transaction.transaction_hash %}">Edit</a>
-                              {% if transaction.transaction.user == request.user %}
-                                  <a href="{% url 'tracker:delete_transaction' transaction_hash=transaction.transaction.transaction_hash %}" class="text-red-600 dark:text-red-400">Delete</a>
-                              {% endif %}
-                              </td>
-                            
-                        </tr>
-                        {% endif %}
-                      {% endfor %}
-                  </tbody>
-              </table>
+        <!-- Date Picker Section -->
+        <div class="flex flex-wrap gap-4 items-center justify-center mt-4">
+          <form method="GET" action="{% url 'tracker:dashboard' %}" class="w-full md:w-auto">
+            <div class="flex flex-col md:flex-row items-center justify-center gap-4">
+              <!-- Start Date -->
+              <div class="relative">
+                <input id="start-date" name="start" type="date"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  value="{{ start_date }}">
               </div>
-              {% else %}
-                  <p>No transactions available.</p>
-              {% endif %}
-              
-        </div>
-        <!-- Centered Export Button -->
-        <div class="mt-8 flex justify-center">
-          <button id="dropdownHoverButton" data-dropdown-toggle="dropdownHover" data-dropdown-trigger="hover" class="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 flex items-center" type="button">
-            Export 
-            <svg class="w-2.5 h-2.5 ms-3 ml-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
-            </svg>
-          </button>
-        </div>
-        
 
-        <!-- Dropdown menu -->
-        <div id="dropdownHover" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
-          <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownHoverButton">
-            <li>
-              <a href="{% url 'tracker:export_transactions' interval='current_year' %}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" id="exportCurrentYear">Current Year</a>
-            </li>
-            <li>
-              <a href="{% url 'tracker:export_transactions' interval='last_year' %}"  class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" id="exportLastYear">Last Year</a>
-            </li>
-            <li>
-              <a href="{% url 'tracker:export_transactions' interval='current_month' %}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" id="exportCurrentMonth">Current Month</a>
-            </li>
-            <li>
-              <a href="{% url 'tracker:export_transactions' interval='last_month' %}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" id="exportLastMonth">Last Month</a>
-            </li>
-          </ul>
+              <!-- "to" text -->
+              <span class="mx-4 text-gray-500">{{ t.to }}</span>
+
+              <!-- End Date -->
+              <div class="relative">
+                <input id="end-date" name="end" type="date"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  value="{{ end_date }}">
+              </div>
+            </div>
+          </form>
         </div>
+
+        <div class="mt-6 flex justify-center sm:mt-8">
+          {% if transactions %}
+          <div class="overflow-x-auto">
+          <table class="min-w-full text-sm text-left text-gray-500 dark:text-gray-400">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+              <tr>
+                <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400">{{ t.description }}</th>
+                <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400">{{ t.category }}</th>
+                <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400">{{ t.amount }}</th>
+                <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400">{{ t.date }}</th>
+                <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for transaction in transactions %}
+                {% if transaction.transaction_hash %}
+                <tr class="bg-white dark:bg-gray-900">
+                  <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
+                    <p class="truncate">{{ transaction.description}}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400"> {{ transaction.user }}</p>
+                  </td>
+                  <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ transaction.category }}</td>
+                  <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                    {% if transaction.transaction_type == 'expense' %}
+                        <span class="text-red-600 dark:text-red-400">$ -{{ transaction.amount }}</span>
+                    {% elif transaction.transaction_type == 'add' %}
+                        <span class="text-green-600 dark:text-green-400">$ {{ transaction.amount }}</span>
+                    {% endif %}
+                  <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ transaction.date|date:"d/m"  }}</td>
+                  <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                    <a href="{% url 'tracker:edit_transaction' transaction_hash=transaction.transaction_hash %}">{{ t.edit }}</a>
+
+                    <a href="{% url 'tracker:delete_transaction' transaction_hash=transaction.transaction_hash %}" class="text-red-600 dark:text-red-400">{{ t.delete }}</a>
+                    
+                </tr>
+                {% else %}
+                <tr class="bg-white dark:bg-gray-900">
+                  <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
+                      <p class="truncate">{{ transaction.user.username }}</p>
+                      <p class="text-xs text-gray-500 dark:text-gray-400">{{ transaction.user.email }}</p>
+                  </td>
+                  <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ transaction.transaction.category }}</td>
+                  <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                    {% if transaction.transaction.transaction_type == 'expense' %}
+                        <span class="text-red-600 dark:text-red-400">$ -{{ transaction.amount }}</span>
+                    {% elif transaction.transaction.transaction_type == 'add' %}
+                        <span class="text-green-600 dark:text-green-400">$ {{ transaction.amount }}</span>
+                    {% endif %}
+                      
+                  </td>
+                  <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ transaction.transaction.date|date:"d/m" }}</td>
+                  
+                    <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                        <a href="{% url 'tracker:edit_transaction' transaction_hash=transaction.transaction.transaction_hash %}">{{ t.edit }}</a>
+                    {% if transaction.transaction.user == request.user %}
+                        <a href="{% url 'tracker:delete_transaction' transaction_hash=transaction.transaction.transaction_hash %}" class="text-red-600 dark:text-red-400">{{ t.delete }}</a>
+                    {% endif %}
+                    </td>
+                  
+              </tr>
+                {% endif %}
+              {% endfor %}
+            </tbody>
+          </table>
+          </div>
+          {% else %}
+            <p class="text-gray-500 dark:text-gray-400">{{ t.no_transactions }}</p>
+          {% endif %}
+        </div>
+
       </div>
     </div>
   </div>
 </section>
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     const ctx = document.getElementById('area-chart').getContext('2d');
