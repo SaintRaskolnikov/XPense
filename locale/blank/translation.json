@@ -155,6 +155,8 @@
   "password_uppercase": "",
   "password_number": "",
   "password_special_char": "",
-  "register": ""
+  "register": "",
+  "exclude_contribution": "",
+  "exclude_contribution_confirmation": ""
 
 }

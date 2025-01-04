@@ -155,5 +155,9 @@
   "password_number": "Le mot de passe doit contenir un chiffre",
   "password_special_char": "Le mot de passe doit contenir un caractère spécial",
   "balance": "Guthaben",
-  "register": "S'inscrire"
+  "register": "S'inscrire",
+  "exclude_contribution": "Diesen Beitrag ausschließen",
+  "total_spend": "Gesamtausgaben",
+  "exclude_contribution_confirmation": "Sind Sie sicher, dass Sie diesen Beitrag ausschließen möchten?"
+
 }

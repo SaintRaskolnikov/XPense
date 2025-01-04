@@ -155,5 +155,8 @@
   "password_number": "Password must contain a number",
   "password_special_char": "Password must contain a special character",
   "balance": "Balance",
-  "register": "Register"
+  "register": "Register",
+  "exclude_contribution": "Exclude this contribution",
+  "total_spend": "Total Spend",
+  "exclude_contribution_confirmation": "Are you sure you want to exclude this contribution?"
 }

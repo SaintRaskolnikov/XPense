@@ -155,5 +155,9 @@
   "password_number": "Le mot de passe doit contenir un chiffre",
   "password_special_char": "Le mot de passe doit contenir un caractère spécial",
   "balance": "Solde",
-  "register": "S'inscrire"
+  "register": "S'inscrire",
+  "exclude_contribution": "Exclure cette contribution",
+  "total_spend": "Dépenses Totales",
+  "exclude_contribution_confirmation": "Êtes-vous sûr de vouloir exclure cette contribution ?"
+
 }
