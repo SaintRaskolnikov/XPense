@@ -167,9 +167,9 @@ def join_team(request):
 
 
 @login_required
-def team_detail(request, team_number):
+def team_detail(request, team_code):
     try:
-        team = Team.objects.get(team_number=team_number)
+        team = Team.objects.get(team_code=team_code)
         return render(request, 'team_detail.html', {'team': team})
     except Team.DoesNotExist:
         messages.error(request, "Team does not exist.")
