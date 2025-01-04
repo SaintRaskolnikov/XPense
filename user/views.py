@@ -205,8 +205,8 @@ def edit_team(request, team_code):
     return render(request, 'edit_team.html', {'form': form, 'team': team, 'team_pictures': team_pictures})
     
 @login_required
-def remove_user_from_team(request, team_number, pk):
-    team = get_object_or_404(Team, team_number=team_number)
+def remove_user_from_team(request, team_code, pk):
+    team = get_object_or_404(Team, team_code=team_code)
     user_to_remove = get_object_or_404(team.users, pk=pk)
     
     # Only the team creator can remove users
@@ -216,4 +216,4 @@ def remove_user_from_team(request, team_number, pk):
     # Remove the user from the team
     team.users.remove(user_to_remove)
     
-    return redirect('edit_team', team_number=team_number)
+    return redirect('edit_team', team_code=team_code)
