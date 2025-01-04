@@ -154,5 +154,6 @@
   "password_uppercase": "Password must contain an uppercase letter",
   "password_number": "Password must contain a number",
   "password_special_char": "Password must contain a special character",
+  "balance": "Balance",
   "register": "Register"
 }

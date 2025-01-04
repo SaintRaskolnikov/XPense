@@ -154,5 +154,6 @@
   "password_uppercase": "Le mot de passe doit contenir une lettre majuscule",
   "password_number": "Le mot de passe doit contenir un chiffre",
   "password_special_char": "Le mot de passe doit contenir un caractère spécial",
+  "balance": "Guthaben",
   "register": "S'inscrire"
 }

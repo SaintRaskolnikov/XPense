@@ -154,6 +154,7 @@
     "password_uppercase": "A palavra-passe deve conter uma letra maiúscula",
     "password_number": "A palavra-passe deve conter um número",
     "password_special_char": "A palavra-passe deve conter um carácter especial",
+    "balance": "Saldo",
     "register": "Registar"
   }
   
