@@ -161,7 +161,7 @@ fetch("{% url 'tracker:monthly_report' %}")
               total: {
                 showAlways: true,
                 show: true,
-                label: "{{ t.total_spend }}",
+                label: "Total",
                 fontFamily: "Inter, sans-serif",
                 formatter: function (w) {
                   const sum = w.globals.seriesTotals.reduce((a, b) => a + b, 0);

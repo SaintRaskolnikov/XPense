@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 from .models import Transaction, Contribution, Subscription, Goals
 from .forms import TransactionForm, ContributionForm, SubscriptionForm, GoalForm
 from user.models import Team
-from decimal import Decimal
+from datetime import datetime, date
 
 
 
@@ -55,11 +55,19 @@ def dashboard(request):
     for subscription in subscriptions:
         next_due_date = subscription.get_next_transaction_date()
         if next_due_date:
+            # If the next_due_date is a datetime.date object
+            if isinstance(next_due_date, date):
+                # Convert the date to datetime at midnight
+                next_due_date = datetime.combine(next_due_date, datetime.min.time())
+            
+            # Now check if it's naive (it will be a datetime object by now)
             if is_naive(next_due_date):
-                next_due_date = make_aware(next_due_date)
+                next_due_date = make_aware(next_due_date)  # Make it aware if naive
+            
+            # Compare with today's date
             if next_due_date <= today:
                 subs_renewal_warning.append(subscription)
-
+    
     # Calculate balance
     current_balance = calculate_balance(transactions_pure, contributions)
 
@@ -159,7 +167,7 @@ def get_balance_data(request):
 @login_required
 def add_transaction(request):
     category_choices = Transaction.load_choices('category.json', language=request.user.language)  # Assuming you're loading categories from a JSON
-    print(f'{request.user.language} here')
+    
     if request.method == 'POST':
         amount = request.POST.get('amount')
         amount = amount.replace(',', '.')  # Convert comma to period
@@ -206,43 +214,41 @@ def add_contribution(request, transaction_hash):
         for member in members:
             # Get the amount for each member from the POST data
             amount = request.POST.get(f'amount_{member.id}')
-            if amount:
-                # Check if a contribution for this user and transaction already exists
-                existing_contribution = Contribution.objects.filter(transaction=transaction, user=member, excluded=False).first()
-                if existing_contribution:
-                    # Delete the existing contribution
-                    existing_contribution.delete()
-                    print(f"Deleted existing contribution for {member.username}")
 
-                # Prepare the form data to create the contribution
-                form_data = {
-                    'amount': amount,
-                    'transaction': transaction.id,
-                    'user': member.id,
-                }
+            # Check if a contribution for this user and transaction already exists
+            existing_contribution = Contribution.objects.filter(transaction=transaction, user=member, excluded=False).first()
+            if existing_contribution:
+                # Delete the existing contribution
+                existing_contribution.delete()
+                
 
-                # Create a new form with the provided data
-                form = ContributionForm(form_data)
+            # Prepare the form data to create the contribution
+            form_data = {
+                'amount': amount,
+                'transaction': transaction.id,
+                'user': member.id,
+            }
 
-                # Check if the form is valid before saving
-                if form.is_valid():
-                    print(f"Saving contribution for {member.username} with amount {amount}")
-                    contribution = form.save(commit=False)
-                    contribution.user = member
-                    contribution.transaction = transaction
-                    contribution.save()
-                                    # Update goals with the same category
-                    goals_with_same_category = Goals.objects.filter(user=member, category=transaction.category)
-                    for goal in goals_with_same_category:
-                        
-                        goal.current_amount += transaction.amount
-                        if goal.current_amount >= goal.target_amount:
-                            goal.is_completed = True
-                        goal.save()
-                else:
-                    print(f"Form invalid for {member.username}, errors: {form.errors}")
+            # Create a new form with the provided data
+            form = ContributionForm(form_data)
 
-        # After saving all contributions, redirect to the dashboard
+            # Check if the form is valid before saving
+            if form.is_valid():
+                
+                contribution = form.save(commit=False)
+                contribution.user = member
+                contribution.transaction = transaction
+                contribution.save()
+                                # Update goals with the same category
+                goals_with_same_category = Goals.objects.filter(user=member, category=transaction.category)
+                for goal in goals_with_same_category:
+                    
+                    goal.current_amount += transaction.amount
+                    if goal.current_amount >= goal.target_amount:
+                        goal.is_completed = True
+                    goal.save()
+                    
+
         return redirect('tracker:dashboard')  # Redirect to a success page after saving
 
     else:
@@ -264,7 +270,7 @@ def get_team_members(request, pk):
         team = Team.objects.get(pk=pk)
         members = team.users.all()  # Assuming a ManyToMany relationship named 'users'
         members_data = [{"id": member.id, "username": member.username} for member in members]
-        print(members_data)
+        
         return JsonResponse({"members": members_data}, status=200)
     except Team.DoesNotExist:
         return JsonResponse({"error": "Team not found."}, status=404)
@@ -390,13 +396,13 @@ def delete_goal(request, pk):
 def get_graph_data(request):
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
-    print(f"Start Date: {start_date}, End Date: {end_date}")
+    
 
     # Parse the start and end date if provided
     if start_date and end_date:
         start_date = datetime.strptime(start_date, '%Y-%m-%d')
         end_date = datetime.strptime(end_date, '%Y-%m-%d')
-        print(f"Parsed Start Date: {start_date}, Parsed End Date: {end_date}")
+        
     else:
         # Default to the last 7 days if no date range is provided
         end_date = now()
@@ -405,7 +411,7 @@ def get_graph_data(request):
     # Get the selected team IDs from the request
     selected_team_ids = request.GET.getlist('team_ids')
     selected_team_ids = [int(team_id) for team_id in selected_team_ids]
-    print(f"Selected Team IDs: {selected_team_ids}")
+    
 
     # Filter transactions and contributions based on the selected date range and teams
     transactions_pure = Transaction.objects.filter(
@@ -414,7 +420,7 @@ def get_graph_data(request):
         date__range=[start_date, end_date]
     ).order_by('date')
 
-    print(f"Transactions Query: {transactions_pure.query}")
+   
 
     contributions = Contribution.objects.filter(
         user=request.user,
@@ -423,7 +429,6 @@ def get_graph_data(request):
         transaction__team__id__in=selected_team_ids
     ).order_by('transaction__date')
 
-    print(f"Contributions Query: {contributions.query}")
 
     # Initialize team totals (remove category handling)
     team_totals = {team.id: 0 for team in Team.objects.filter(id__in=selected_team_ids)}
@@ -450,7 +455,7 @@ def get_graph_data(request):
         for team_id in selected_team_ids
     ]
 
-    print(f"Total Spent Per Team: {total_spent_per_team}")
+
 
     return JsonResponse({
         'total_spent_per_team': total_spent_per_team
@@ -506,6 +511,7 @@ def renew_subscription(request, pk):
 
         if request.method == 'POST':
             subscription.renew()
+            
             Transaction.objects.create(
                 user=subscription.user,
                 category=subscription.category,
@@ -531,7 +537,7 @@ def cancel_subscription(request, pk):
 @login_required
 def user_subscriptions(request):
     # Fetch all subscriptions that belong to the logged-in user
-    subscriptions = Subscription.objects.filter(user=request.user, is_active=True)
+    subscriptions = Subscription.objects.filter(user=request.user)
     
     # Calculate monthly and annual expected spend
     daily_spend = 0
@@ -758,5 +764,5 @@ def get_expense_per_category(request):
         }
         for category, amount in category_expenses.items()
     ]
-    print(f'{expense_data} some')
+
     return JsonResponse(expense_data, safe=False)

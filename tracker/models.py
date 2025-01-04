@@ -136,13 +136,11 @@ class Subscription(models.Model):
                 elif self.periodicity == 'weekly':
                     return self.renewed_at + timedelta(weeks=1)
                 elif self.periodicity == 'monthly':
-                    # Move to the first of the next month
                     next_month = self.renewed_at.replace(day=28) + timedelta(days=4)
                     return next_month.replace(day=1)
                 elif self.periodicity == 'annually':
                     # Move to January 1st of the next year
                     return self.renewed_at.replace(year=self.start_date.year + 1)
-
                 return None  # Default if periodicity is invalid or missing
             else:
                 if self.periodicity == 'daily':
@@ -150,12 +148,16 @@ class Subscription(models.Model):
                 elif self.periodicity == 'weekly':
                     return self.start_date + timedelta(weeks=1)
                 elif self.periodicity == 'monthly':
-                    # Move to the first of the next month
+                    if self.start_date.day == 1:
+                        return self.start_date
                     next_month = self.start_date.replace(day=28) + timedelta(days=4)
                     return next_month.replace(day=1)
                 elif self.periodicity == 'annually':
-                    # Move to January 1st of the next year
-                    return self.start_date.replace(year=self.start_date.year + 1)
+        # If already January 1st, return the same date
+                    if self.start_date.month == 1 and self.start_date.day == 1:
+                        return self.start_date
+                    # Otherwise, move to January 1st of the next year
+                    return self.start_date.replace(year=self.start_date.year + 1, month=1, day=1)
 
                 return None  # Default if periodicity is invalid or missing
         else:
@@ -164,12 +166,9 @@ class Subscription(models.Model):
     def renew(self):
         """Renew the subscription for the next period."""
         if self.is_active:
-            if self.renewed_at:
-                self.renewed_at = self.get_next_transaction_date()
-                self.save()
-            else:
-                self.start_date = self.get_next_transaction_date()
-                self.save()
+            self.renewed_at = self.get_next_transaction_date()
+            self.save()
+
         else: 
             return None
 
@@ -179,8 +178,6 @@ class Subscription(models.Model):
         self.save()
 
     def save(self, *args, **kwargs):
-        if not self.renewed_at:
-            self.renewed_at = self.start_date
 
         super().save(*args, **kwargs)
     
@@ -189,7 +186,6 @@ class Goals(models.Model):
     @staticmethod
     def load_choices(file_name, language):
         choices_file = os.path.join(settings.BASE_DIR,'locale', str(language), 'choices', file_name)
-        print(choices_file)
         if not os.path.exists(choices_file):
             return []
         try:
