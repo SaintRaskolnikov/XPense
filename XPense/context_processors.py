@@ -26,6 +26,9 @@ def load_translations(language):
         return json.load(file)
 
 def translation_context_processor(request):
-    translations = load_translations(request.user.language)
+    try:
+        translations = load_translations(request.user.language)
+    except:
+        translations = load_translations('en')
 
     return {'t': translations}
