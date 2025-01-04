@@ -35,7 +35,7 @@
                 data-dropdown-toggle="apps-dropdown"
                 class="p-2 text-gray-500 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
               >
-                <span class="sr-only">Function board</span>
+                <span class="sr-only">{{ t.function_board }}</span>
                 <!-- Icon -->
                 <svg
                   class="w-6 h-6"
@@ -56,7 +56,7 @@
                 <div
                   class="block py-2 px-4 text-base font-medium text-center text-gray-700 bg-gray-50 dark:bg-gray-600 dark:text-gray-300"
                 >
-                  Apps
+                  {{ t.apps }}
                 </div>
                 <div class="grid grid-cols-2 gap-4 p-4">
                   <!-- Create Team -->
@@ -65,7 +65,7 @@
                     class="block p-4 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 group"
                   >
                     <i class="fas fa-users-cog mx-auto mb-1 w-7 h-7 text-gray-400 group-hover:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-400"></i>
-                    <div class="text-sm text-gray-900 dark:text-white">Create Team</div>
+                    <div class="text-sm text-gray-900 dark:text-white">{{ t.create_team }}</div>
                   </a>
                 
                   <!-- Join Team -->
@@ -74,7 +74,7 @@
                     class="block p-4 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 group"
                   >
                     <i class="fas fa-user-plus mx-auto mb-1 w-7 h-7 text-gray-400 group-hover:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-400"></i>
-                    <div class="text-sm text-gray-900 dark:text-white">Join Team</div>
+                    <div class="text-sm text-gray-900 dark:text-white">{{ t.join_team }}</div>
                   </a>
                 
                   <!-- Create Subscription -->
@@ -83,7 +83,7 @@
                     class="block p-4 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 group"
                   >
                     <i class="fas fa-credit-card mx-auto mb-1 w-7 h-7 text-gray-400 group-hover:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-400"></i>
-                    <div class="text-sm text-gray-900 dark:text-white">Create Subscription</div>
+                    <div class="text-sm text-gray-900 dark:text-white">{{ t.create_subscription }}</div>
                   </a>
                 
                   <!-- View Subscriptions -->
@@ -92,26 +92,26 @@
                     class="block p-4 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 group"
                   >
                     <i class="fas fa-list-alt mx-auto mb-1 w-7 h-7 text-gray-400 group-hover:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-400"></i>
-                    <div class="text-sm text-gray-900 dark:text-white">View Subscriptions</div>
+                    <div class="text-sm text-gray-900 dark:text-white">{{ t.view_subscriptions }}</div>
                   </a>
-                
+                 <!-- Create Goal -->
+                 <a
+                    href="{% url 'tracker:create_goal' %}"
+                    class="block p-4 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 group"
+                  >
+                    <i class="fas fa-plus-circle mx-auto mb-1 w-7 h-7 text-gray-400 group-hover:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-400"></i>
+                    <div class="text-sm text-gray-900 dark:text-white">{{ t.create_new_goal }}</div>
+                  </a>                
                   <!-- View Goals -->
                   <a
                     href="{% url 'tracker:goals_progress' %}"
                     class="block p-4 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 group"
                   >
                     <i class="fas fa-trophy mx-auto mb-1 w-7 h-7 text-gray-400 group-hover:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-400"></i>
-                    <div class="text-sm text-gray-900 dark:text-white">View Goals</div>
+                    <div class="text-sm text-gray-900 dark:text-white">{{ t.view_goals }}</div>
                   </a>
                 
-                  <!-- Create Goal -->
-                  <a
-                    href="{% url 'tracker:create_goal' %}"
-                    class="block p-4 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 group"
-                  >
-                    <i class="fas fa-plus-circle mx-auto mb-1 w-7 h-7 text-gray-400 group-hover:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-400"></i>
-                    <div class="text-sm text-gray-900 dark:text-white">Create a new goal</div>
-                  </a>
+ 
                 </div>
                 
                 
@@ -124,7 +124,7 @@
                 aria-expanded="false"
                 data-dropdown-toggle="dropdown"
               >
-                <span class="sr-only">Open user menu</span>
+                <span class="sr-only">{{ t.open_user_menu }}</span>
                 <img 
                 src="{{ profile_picture }}" 
                 alt="Profile Picture"
@@ -152,21 +152,21 @@
                     <a
                       href="{% url 'user:edit_profile' %}"
                       class="block py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-400 dark:hover:text-white"
-                      >My profile</a
+                      >{{ t.my_profile }}</a
                     >
                   </li>
                   <li>
                     <a
                       href="{% url 'user:change_password' %}"
                       class="block py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-400 dark:hover:text-white"
-                      >Change password</a
+                      >{{ t.change_password }}</a
                     >
                   </li>
                   <li>
                     <a
                       href="{% url 'tracker:integrated_position' %}"
                       class="block py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-400 dark:hover:text-white"
-                      >My position</a
+                      >{{ t.my_position }}</a
                     >
                   </li>
                 </ul>
@@ -178,7 +178,7 @@
                     <a
                       href="{% url 'user:logout' %}"
                       class="block py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                      >Sign out</a
+                      >{{ t.sign_out }}</a
                     >
                   </li>
                 </ul>

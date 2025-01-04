@@ -7,8 +7,15 @@ from django.db import models
 from encrypted_model_fields.fields import EncryptedCharField, EncryptedTextField, EncryptedEmailField
 
 class CustomUser(AbstractUser):
+    LANGUAGES = [
+    ('en', 'English'),
+    ('pt', 'Portuguese'),
+    ('de', 'German'),
+    ('fr', 'French'),
+    ]
     email = EncryptedEmailField(unique=True)
     profile_picture = models.CharField(max_length=255, null=True, blank=True)
+    language = models.CharField(max_length=2, choices=LANGUAGES, default='en')
     
 
     def __str__(self):
@@ -39,8 +46,8 @@ class Team(models.Model):
     
     @property
     def get_profile_picture(self):
-        if self.profile_picture:
-            return f'/media/profile_pictures/{self.profile_picture}'
+        if self.team_picture:
+            return f'/media/profile_pictures/{self.team_picture}'
         return '/media/profile_pictures/user.png'
 
     def save(self, *args, **kwargs):

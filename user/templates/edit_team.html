@@ -10,8 +10,8 @@
 </style>
 <section class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-8">
     <div class="max-w-4xl w-full p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Edit Team: {{ team.name }}</h2>
-        <h3 class="text-lg text-gray-600 dark:text-gray-400 mb-6">Team code: {{ team.team_code }}</h3>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">{{ t.edit_team }}: {{ team.name }}</h2>
+        <h3 class="text-lg text-gray-600 dark:text-gray-400 mb-6">{{ t.team_code }}: {{ team.team_code }}</h3>
 
         <!-- Team Edit Form -->
         <form method="post" class="space-y-6 mb-6">
@@ -19,18 +19,18 @@
             
             <!-- Name Field -->
             <div class="mb-6">
-                <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Team Name</label>
+                <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t.team_name }}</label>
                 <input type="text" id="name" name="name" value="{{ form.name.value }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
             </div>
 
             <!-- Description Field -->
             <div class="mb-6">
-                <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Team Description</label>
+                <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t.team_description }}</label>
                 <textarea id="description" name="description" rows="4" class="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>{{ form.description.value }}</textarea>
             </div>
-            <!-- team Picture Field -->
+            <!-- Team Picture Field -->
             <div class="relative z-0 w-full mb-5 group">
-                <label for="team-picture-selection" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Choose a Team Picture</label>
+                <label for="team-picture-selection" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t.choose_team_picture }}</label>
                 <div id="team-picture-selection" class="grid grid-cols-10 gap-4">
                     {% for image in team_pictures %}
                         <input type="radio" name="team_picture" id="{{image}}" value="{{image}}" style="display: none;">
@@ -42,21 +42,21 @@
 
             <!-- Submit Button -->
             <div class="mt-4">
-                <button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Save Changes</button>
+                <button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{{ t.save_changes }}</button>
             </div>
         </form>
 
         <!-- List of Users in the Team -->
-        <h3 class="text-xl font-medium text-gray-900 dark:text-white mt-6">Team Members</h3>
+        <h3 class="text-xl font-medium text-gray-900 dark:text-white mt-6">{{ t.team_members }}</h3>
         <ul class="max-w-md divide-y divide-gray-200 dark:divide-gray-700">
             {% for user in team.users.all %}
             <li class="py-3 sm:py-4">
                 <div class="flex items-center space-x-4 rtl:space-x-reverse">
                     <div class="flex-shrink-0">
                         {% if user.profile_picture %}
-                        <img src="/media/profile_pictures/{{ user.profile_picture }}" alt="Profile Picture" class="h-10 w-10 rounded-full">
+                        <img src="/media/profile_pictures/{{ user.profile_picture }}" alt="{{ t.profile_picture }}" class="h-10 w-10 rounded-full">
                         {% else %}
-                        <img src="/media/profile_pictures/user.png" alt="Default Profile Picture" class="h-10 w-10 rounded-full">
+                        <img src="/media/profile_pictures/user.png" alt="{{ t.default_profile_picture }}" class="h-10 w-10 rounded-full">
                         {% endif %}
                     </div>
                     <div class="flex-1 min-w-0">
@@ -72,7 +72,7 @@
                             <form method="post" action="{% url 'user:remove_user_from_team' team_code=team.team_code pk=user.pk %}">
                                 {% csrf_token %}
                                 <button type="submit" class="text-sm text-red-600 hover:text-red-800">
-                                    Remove
+                                    {{ t.remove }}
                                 </button>
                             </form>
                         </div>
@@ -81,12 +81,13 @@
             </li>
             {% empty %}
             <li class="py-3 sm:py-4 text-center">
-                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">No members in this team yet.</p>
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ t.no_members }}</p>
             </li>
             {% endfor %}
         </ul>
     </div>
 </section>
+
 
 <script>
     function selectImage(imageName, imageElement) {

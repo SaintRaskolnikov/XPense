@@ -1,0 +1,19 @@
+[
+  {"code": "food", "description": "Essen"},
+  {"code": "transport", "description": "Transport"},
+  {"code": "entertainment", "description": "Unterhaltung"},
+  {"code": "utilities", "description": "Versorgungsleistungen"},
+  {"code": "clothing", "description": "Kleidung"},
+  {"code": "health", "description": "Gesundheit"},
+  {"code": "education", "description": "Bildung"},
+  {"code": "gifts", "description": "Geschenke"},
+  {"code": "savings", "description": "Ersparnisse"},
+  {"code": "investment", "description": "Investition"},
+  {"code": "insurance", "description": "Versicherung"},
+  {"code": "taxes", "description": "Steuern"},
+  {"code": "rent", "description": "Miete"},
+  {"code": "credit", "description": "Kredit"},
+  {"code": "salary", "description": "Gehalt"},
+  {"code": "interest", "description": "Zinsen"},
+  {"code": "other", "description": "Sonstiges"}
+]

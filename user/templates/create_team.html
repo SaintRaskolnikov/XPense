@@ -10,24 +10,24 @@
 </style>
 <section class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-8">
     <div class="max-w-4xl w-full p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-    <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Create a New Team</h5>
+    <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ t.create_team_title }}</h5>
     
     <form method="POST" action="{% url 'user:create_team' %}">
         {% csrf_token %}
-        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Create a team and invite users to join. The user who creates the team will automatically be added.</p>
+        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">{{ t.create_team_description }}</p>
         
         <div class="mb-4">
-            <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Team Name</label>
-            <input type="text" name="name" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="Enter your team name" required />
+            <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t.team_name_label }}</label>
+            <input type="text" name="name" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="{{ t.enter_team_name_placeholder }}" required />
         </div>
 
         <div class="mb-4">
-            <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
-            <textarea name="description" id="description" rows="4" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="Describe your team" required></textarea>
+            <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t.description_label }}</label>
+            <textarea name="description" id="description" rows="4" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="{{ t.describe_team_placeholder }}" required></textarea>
         </div>
                     <!-- team Picture Field -->
         <div class="relative z-0 w-full mb-5 group">
-            <label for="team-picture-selection" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Choose a Team Picture</label>
+            <label for="team-picture-selection" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t.choose_team_picture_label }}</label>
             <div id="team-picture-selection" class="grid grid-cols-10 gap-4">
                 {% for image in team_pictures %}
                     <input type="radio" name="team_picture" id="{{image}}" value="{{image}}" style="display: none;">
@@ -37,15 +37,16 @@
             </div>
         </div>
 
-        <button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Create Team</button>
+        <button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{{ t.create_team_button }}</button>
     </form>
 
     {% if team_code %}
-        <p class="mt-4 text-gray-700 dark:text-gray-400">Your team code is: <strong>{{ team_code }}</strong></p>
+        <p class="mt-4 text-gray-700 dark:text-gray-400">{{ t.team_code_message }} <strong>{{ team_code }}</strong></p>
     {% endif %}
 </div>
 </div>
 </section>
+
 <script>
     function selectImage(imageName, imageElement) {
         // Deselect any previously selected image

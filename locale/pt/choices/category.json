@@ -1,0 +1,19 @@
+[
+  {"code": "food", "description": "Comida"},
+  {"code": "transport", "description": "Transporte"},
+  {"code": "entertainment", "description": "Entretenimento"},
+  {"code": "utilities", "description": "Serviços públicos"},
+  {"code": "clothing", "description": "Vestuário"},
+  {"code": "health", "description": "Saúde"},
+  {"code": "education", "description": "Educação"},
+  {"code": "gifts", "description": "Presentes"},
+  {"code": "savings", "description": "Poupança"},
+  {"code": "investment", "description": "Investimento"},
+  {"code": "insurance", "description": "Seguro"},
+  {"code": "taxes", "description": "Impostos"},
+  {"code": "rent", "description": "Arrendamento"},
+  {"code": "credit", "description": "Crédito"},
+  {"code": "salary", "description": "Salário"},
+  {"code": "interest", "description": "Juros"},
+  {"code": "other", "description": "Outro"}
+]

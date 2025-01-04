@@ -35,50 +35,62 @@
             
             <!-- Username Field -->
             <div class="relative z-0 w-full mb-5 group">
-                <label for="floating_username" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Username</label>
+                <label for="floating_username" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t.username }}</label>
                 <input type="text" name="username" id="floating_username" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder=" " required />
             </div>
           
             <!-- Email Field -->
             <div class="relative z-0 w-full mb-5 group">
-                <label for="floating_email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email address</label>
+                <label for="floating_email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t.email_address }}</label>
                 <input type="email" name="email" id="floating_email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder=" " required />
             </div>
           
             <!-- Password Field -->
             <div class="relative z-0 w-full mb-5 group">
-                <label for="floating_password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+                <label for="floating_password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t.password }}</label>
                 <input type="password" name="password" id="floating_password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder=" " required />
                 
                 <div id="password-requirements" class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                    <p id="length" class="invalid">Password must be at least 6 characters long.</p>
-                    <p id="uppercase" class="invalid">Password must contain at least one uppercase letter.</p>
-                    <p id="number" class="invalid">Password must contain at least one number.</p>
-                    <p id="special-char" class="invalid">Password must contain at least one special character.</p>
+                    <p id="length" class="invalid">{{ t.password_length }}</p>
+                    <p id="uppercase" class="invalid">{{ t.password_uppercase }}</p>
+                    <p id="number" class="invalid">{{ t.password_number }}</p>
+                    <p id="special-char" class="invalid">{{ t.password_special_char }}</p>
                 </div>
             </div>
           
             <!-- Confirm Password Field -->
             <div class="relative z-0 w-full mb-5 group">
-                <label for="floating_password_confirm" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Confirm password</label>
+                <label for="floating_password_confirm" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t.confirm_password }}</label>
                 <input type="password" name="password_confirm" id="floating_password_confirm" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder=" " required />
             </div>
+
             <!-- Profile Picture Field -->
             <div class="relative z-0 w-full mb-5 group">
-                <label for="profile-picture-selection" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Profile Picture</label>
+                <label for="profile-picture-selection" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t.profile_picture }}</label>
                 <div id="profile-picture-selection" class="grid grid-cols-3 gap-4">
                     {% for image in profile_pictures %}
                         <input type="radio" name="profile_picture" id="{{image}}" value="{{image}}" style="display: none;">
                         <img src="/media/profile_pictures/{{image}}" alt="{{image}}" class="profile-image-preview rounded-lg cursor-pointer transition transform hover:scale-110" onclick="selectImage('{{image}}', this)">
                     {% endfor %}
-                    
                 </div>
             </div>
+
+            <!-- Category Select -->
+            <div>
+                <label for="language" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">{{ t.category }}</label>
+                <select id="language" name="language" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-primary-500 dark:focus:ring-primary-500">
+                    {% for choice in form.language.choices %}
+                    <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
             <!-- Submit Button -->
-            <button type="submit" id="submit-btn" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" disabled>Register</button>
+            <button type="submit" id="submit-btn" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" disabled>{{ t.register }}</button>
         </form>
     </div>
 </section>
+
 
 <script>
     const password = document.getElementById('floating_password');
