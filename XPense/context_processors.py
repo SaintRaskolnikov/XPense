@@ -1,7 +1,9 @@
 # XPense/context_processors.py
-
-from django.conf import settings
+from user.models import CustomUser 
 from user.models import CustomUser
+import json
+from django.utils.translation import get_language
+from django.conf import settings
 
 def user_info(request):
     if request.user.is_authenticated:
@@ -16,3 +18,14 @@ def user_info(request):
             'profile_picture': profile_picture,
         }
     return {}
+
+
+
+def load_translations(language):
+    with open(f'locale/{language}/translation.json', 'r', encoding='utf-8') as file:
+        return json.load(file)
+
+def translation_context_processor(request):
+    translations = load_translations(request.user.language)
+
+    return {'t': translations}
