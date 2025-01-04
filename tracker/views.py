@@ -280,7 +280,7 @@ def edit_transaction(request, transaction_hash):
 
     # If the form is submitted
     if request.method == "POST":
-        form = TransactionForm(request.POST, instance=transaction)
+        form = TransactionForm(request.POST, instance=transaction, user=request.user)
         if form.is_valid():
             transaction = form.save(commit=False)
             transaction.save()
@@ -333,7 +333,7 @@ def goals_progress(request):
 @login_required
 def create_goal(request):
     if request.method == "POST":
-        form = GoalForm(request.POST)
+        form = GoalForm(request.POST, user=request.user)
         if form.is_valid():
             goal = form.save(commit=False)
             goal.user = request.user  # Assign the current logged-in user to the goal
@@ -358,7 +358,7 @@ def edit_goal(request, pk):
     goal = get_object_or_404(Goals, id=pk, user=request.user)
     
     if request.method == "POST":
-        form = GoalForm(request.POST, instance=goal)
+        form = GoalForm(request.POST, instance=goal, user=request.user)
         if form.is_valid():
             try:
                 form.save()
@@ -460,7 +460,7 @@ def get_graph_data(request):
 def create_subscriptions(request):
     category_choices = Subscription.load_choices('category.json', request.user.language)    
     if request.method == 'POST':
-        form = SubscriptionForm(request.POST)
+        form = SubscriptionForm(request.POST, user=request.user)
         if form.is_valid():
             subscription = form.save(commit=False)
             subscription.user = request.user
@@ -484,7 +484,7 @@ def edit_subscription(request, subscription_id):
 
     # If the form is submitted
     if request.method == 'POST':
-        form = SubscriptionForm(request.POST, instance=subscription)
+        form = SubscriptionForm(request.POST, instance=subscription, user=request.user)
         if form.is_valid():
             form.save()
             return redirect('tracker:user_subscriptions')
