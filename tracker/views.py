@@ -164,7 +164,7 @@ def add_transaction(request):
         amount = request.POST.get('amount')
         amount = amount.replace(',', '.')  # Convert comma to period
         amount = float(amount)  # Convert to float after the replacement
-        form = TransactionForm(request.POST)
+        form = TransactionForm(request.POST, user=request.user)
         if form.is_valid():
 
             with db_transaction.atomic():  # Ensure atomicity
