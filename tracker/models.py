@@ -15,7 +15,6 @@ class Transaction(models.Model):
     @staticmethod
     def load_choices(file_name, language):
         choices_file = os.path.join(settings.BASE_DIR,'locale', str(language), 'choices', file_name)
-        print(choices_file)
         if not os.path.exists(choices_file):
             return []
         try:
@@ -82,7 +81,6 @@ class Subscription(models.Model):
     @staticmethod
     def load_choices(file_name, language):
         choices_file = os.path.join(settings.BASE_DIR,'locale', str(language), 'choices', file_name)
-        print(choices_file)
         if not os.path.exists(choices_file):
             return []
         try:

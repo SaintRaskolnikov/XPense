@@ -142,7 +142,6 @@ def get_balance_data(request):
         # Process daily transactions
         daily_balance = current_balance
         for transaction in daily_transactions:
-            print(f"Processing transaction: {transaction.amount} {transaction.transaction_type} for {transaction.date} and balance {daily_balance} with date {day}")
             if transaction.transaction_type == 'add':
                 daily_balance += transaction.amount
             elif transaction.transaction_type == 'expense':
