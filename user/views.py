@@ -8,9 +8,14 @@ from django.contrib.auth import logout
 from .models import Team
 from django.conf import settings
 import os
+import vercel_blob
+
+
 
 def register(request):
+
     profile_pictures_dir = os.path.join(settings.MEDIA_ROOT, 'profile_pictures')
+
     profile_pictures = [f for f in os.listdir(profile_pictures_dir) if os.path.isfile(os.path.join(profile_pictures_dir, f))]
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
