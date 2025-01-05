@@ -8,7 +8,7 @@ from django.contrib.auth import logout
 from .models import Team
 from django.conf import settings
 import os
-import vercel_blob
+
 
 
 
