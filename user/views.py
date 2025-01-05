@@ -63,7 +63,6 @@ def edit_profile(request):
 
     if request.method == 'POST':
         form = EditProfileForm(request.POST, instance=request.user)
-        print(form)
         if form.is_valid():
             user = form.save(commit=False)
 
@@ -125,8 +124,7 @@ def create_team(request):
         
         # Get the generated team code
         team_code = team.team_code
-        print(team_code)
-        
+
         # Redirect to a confirmation page or display the team code
         return redirect('user:teams_list')
     
@@ -149,22 +147,19 @@ def join_team(request):
                 # Check if user is already in the team
                 if request.user in team.users.all():
                     messages.info(request, "You are already part of this team!")
-                    print("You are already part of this team!")
                     return redirect('user:edit_team', team_code=team.team_code)
                 
                 else:
                 # Add the user to the team
                     team.users.add(request.user)
-                    print("You have successfully joined the team!")
                     messages.success(request, "You have successfully joined the team!")
                 return redirect('user:edit_team', team_code=team.team_code)
             except Team.DoesNotExist:
                 messages.error(request, "Invalid team number!")
-                print("Invalid team number!")
 
         else:
             messages.error(request, "Please provide a valid team number.")
-            print("Please provide a valid team number.")
+
     else:
         form = JoinTeamForm()
 
