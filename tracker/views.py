@@ -113,13 +113,12 @@ def merge_and_sort_transactions(transactions_pure, contributions):
 
 
 
-@login_required
 def get_balance_data(request):
     # Get today's date
     today = now()
 
     # Get the date 30 days ago
-    thirty_days_ago = today - timedelta(days=7)
+    thirty_days_ago = today - timedelta(days=30)
 
     # Fetch transactions and contributions for the user within the last 30 days
     transactions_pure = Transaction.objects.filter(user=request.user, team__isnull=True, date__gte=thirty_days_ago).order_by('date')
@@ -129,40 +128,45 @@ def get_balance_data(request):
     current_balance = 0
     balance_data = []
 
-    # Calculate balance for each day
-    for i in range(7):
-        # For each day, filter transactions that occurred on that date
-        day = today - timedelta(days=i)
+    # Iterate from the oldest date to the newest (30th day ago to today)
+    for i in range(31):
+        # For each day, get the date starting from the 30th day ago
+        day = thirty_days_ago + timedelta(days=i)
         day_start = day.replace(hour=0, minute=0, second=0, microsecond=0)
         day_end = day.replace(hour=23, minute=59, second=59, microsecond=999999)
 
-        # Transactions on the current day
+        # Filter transactions for that specific day
         daily_transactions = transactions_pure.filter(date__range=[day_start, day_end])
         daily_contributions = contributions.filter(transaction__date__range=[day_start, day_end])
 
-        # Update the balance for the day
+        # Process daily transactions
+        daily_balance = current_balance
         for transaction in daily_transactions:
+            print(f"Processing transaction: {transaction.amount} {transaction.transaction_type} for {transaction.date} and balance {daily_balance} with date {day}")
             if transaction.transaction_type == 'add':
-                current_balance += transaction.amount
+                daily_balance += transaction.amount
             elif transaction.transaction_type == 'expense':
-                current_balance -= transaction.amount
+                daily_balance -= transaction.amount
 
         for contribution in daily_contributions:
             if contribution.transaction.transaction_type == 'add':
-                current_balance += contribution.amount
+                daily_balance += contribution.amount
             elif contribution.transaction.transaction_type == 'expense':
-                current_balance -= contribution.amount
+                daily_balance -= contribution.amount
 
-        # Store the balance for this day
+        # Store the balance for the current day
         balance_data.append({
             'date': day.strftime('%Y-%m-%d'),
-            'balance': current_balance
+            'balance': daily_balance
         })
 
-    # Reverse the order to show from the earliest date to the most recent
-    balance_data.reverse()
+        # Set current balance to the calculated balance for this day
+        current_balance = daily_balance
 
     return JsonResponse(balance_data, safe=False)
+
+
+
 
 @login_required
 def add_transaction(request):

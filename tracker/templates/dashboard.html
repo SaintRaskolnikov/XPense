@@ -14,9 +14,10 @@
     pointer-events: none; /* Prevent interaction with the chart */
   }
 </style>
-<section class="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
-  <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
-    <div class="mx-auto max-w-5xl">
+<section class="bg-white py-8 antialiased dark:bg-gray-900 md:py-16 w-full">
+  <!-- Removed max-width constraints -->
+  <div class="w-full 2xl:px-0">
+    <div class="w-full">
       <!-- Container with consistent width -->
       <div class="w-full">
 
@@ -66,6 +67,7 @@
         
         <!-- Balance and Chart -->
         <div class="text-center mb-6">
+          
           <h1 class="mb-4 text-3xl font-extrabold text-gray-900 dark:text-white md:text-5xl lg:text-6xl">
             <span class="
               text-transparent 
@@ -102,6 +104,7 @@
 
         <!-- Date Picker Section -->
         <div class="flex flex-wrap gap-4 items-center justify-center mt-4">
+          
           <form method="GET" action="{% url 'tracker:dashboard' %}" class="w-full md:w-auto">
             <div class="flex flex-col md:flex-row items-center justify-center gap-4">
               <!-- Start Date -->
@@ -131,8 +134,9 @@
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
                 <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400">{{ t.description }}</th>
-                <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400">{{ t.category }}</th>
                 <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400">{{ t.amount }}</th>
+                <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400">{{ t.category }}</th>
+
                 <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400">{{ t.date }}</th>
                 <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400"></th>
               </tr>
@@ -145,13 +149,15 @@
                     <p class="truncate">{{ transaction.description}}</p>
                     <p class="text-xs text-gray-500 dark:text-gray-400"> {{ transaction.user }}</p>
                   </td>
-                  <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ transaction.category }}</td>
                   <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                     {% if transaction.transaction_type == 'expense' %}
                         <span class="text-red-600 dark:text-red-400">$ -{{ transaction.amount }}</span>
                     {% elif transaction.transaction_type == 'add' %}
                         <span class="text-green-600 dark:text-green-400">$ {{ transaction.amount }}</span>
                     {% endif %}
+                  </td>
+                  <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ transaction.category }}</td>
+
                   <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ transaction.date|date:"d/m"  }}</td>
                   <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                     <a href="{% url 'tracker:edit_transaction' transaction_hash=transaction.transaction_hash %}">{{ t.edit }}</a>
