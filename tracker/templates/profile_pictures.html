@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Pictures</title>
+</head>
+<body>
+    <h1>Profile Pictures</h1>
+    <div>
+        {% for image in images %}
+            <img src="{{ image }}" alt="Profile Picture" style="width: 150px; height: 150px; margin: 10px; border-radius: 50%;">
+        {% endfor %}
+    </div>
+</body>
+</html>

@@ -11,6 +11,7 @@ from encrypted_model_fields.fields import EncryptedCharField, EncryptedTextField
 from django.core.exceptions import ValidationError
 
 
+
 class Transaction(models.Model):
     @staticmethod
     def load_choices(file_name, language):

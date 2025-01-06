@@ -12,7 +12,6 @@ from user.models import Team
 from datetime import datetime, date
 
 
-
 @login_required
 def dashboard(request):
     today = now()
@@ -609,7 +608,10 @@ def export_transactions(request, interval):
     elif interval == 'last_year':
         start_date = now().replace(year=now().year - 1, month=1, day=1)
     elif interval == 'last_month':
-        start_date = now().replace(month=now().month - 1, day=1)
+        if now().month == 1:
+            start_date = now().replace(year=now().year - 1, month=12, day=1)
+        else:
+            start_date = now().replace(month=now().month - 1, day=1)
     else:
         start_date = None
 
