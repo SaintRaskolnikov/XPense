@@ -158,6 +158,10 @@
   "register": "S'inscrire",
   "exclude_contribution": "Diesen Beitrag ausschließen",
   "total_spend": "Gesamtausgaben",
-  "exclude_contribution_confirmation": "Sind Sie sicher, dass Sie diesen Beitrag ausschließen möchten?"
+  "exclude_contribution_confirmation": "Sind Sie sicher, dass Sie diesen Beitrag ausschließen möchten?",
+  "delete_team_confirmation": "Sind Sie sicher, dass Sie dieses Team löschen möchten?",
+  "delete_team_button": "Team löschen",
+  "to": "zu",
+  "delete_team": "Team löschen"
 
 }

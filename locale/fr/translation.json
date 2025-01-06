@@ -158,6 +158,10 @@
   "register": "S'inscrire",
   "exclude_contribution": "Exclure cette contribution",
   "total_spend": "Dépenses Totales",
+  "delete_team_confirmation": "Êtes-vous sûr de vouloir supprimer cette équipe ?",
+  "delete_team_button": "Supprimer l'équipe",
+  "to": "à",
+  "delete_team": "Supprimer l'équipe",
   "exclude_contribution_confirmation": "Êtes-vous sûr de vouloir exclure cette contribution ?"
 
 }

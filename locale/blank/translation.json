@@ -157,6 +157,13 @@
   "password_special_char": "",
   "register": "",
   "exclude_contribution": "",
-  "exclude_contribution_confirmation": ""
+  "exclude_contribution_confirmation": "",
+
+
+  "delete_team_confirmation": "",
+  "delete_team_button": "",
+  "to": "",
+  "delete_team": ""
+
 
 }
