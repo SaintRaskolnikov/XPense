@@ -22,7 +22,7 @@
             {% for team in user_teams %}
             <li class="py-3 sm:py-4">
                 <a href="{% url 'user:edit_team' team.team_code %}">
-                <img class="w-8 h-8 rounded-full" src="/media/profile_pictures/{{team.team_picture}}" alt="{{ t.team_picture }}">
+                <img class="w-8 h-8 rounded-full" src="{{ team.team_picture }}" alt="{{ t.team_picture }}">
                 <div class="flex items-center space-x-4 rtl:space-x-reverse">
 
                     <div class="flex-1 min-w-0">

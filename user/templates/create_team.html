@@ -8,62 +8,64 @@
         transition: transform 0.2s, border-color 0.2s; /* Smooth transition */
     }
 </style>
+
 <section class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-8">
     <div class="max-w-4xl w-full p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-    <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ t.create_team_title }}</h5>
-    
-    <form method="POST" action="{% url 'user:create_team' %}">
-        {% csrf_token %}
-        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">{{ t.create_team_description }}</p>
+        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ t.create_team_title }}</h5>
         
-        <div class="mb-4">
-            <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t.team_name_label }}</label>
-            <input type="text" name="name" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="{{ t.enter_team_name_placeholder }}" required />
-        </div>
-
-        <div class="mb-4">
-            <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t.description_label }}</label>
-            <textarea name="description" id="description" rows="4" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="{{ t.describe_team_placeholder }}" required></textarea>
-        </div>
-                    <!-- team Picture Field -->
-        <div class="relative z-0 w-full mb-5 group">
-            <label for="team-picture-selection" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t.choose_team_picture_label }}</label>
-            <div id="team-picture-selection" class="grid grid-cols-10 gap-4">
-                {% for image in team_pictures %}
-                    <input type="radio" name="team_picture" id="{{image}}" value="{{image}}" style="display: none;">
-                    <img src="/media/profile_pictures/{{image}}" alt="{{image}}" class="team-image-preview rounded-lg cursor-pointer transition transform hover:scale-110" onclick="selectImage('{{image}}', this)">
-                {% endfor %}
-                
+        <form method="POST" action="{% url 'user:create_team' %}">
+            {% csrf_token %}
+            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">{{ t.create_team_description }}</p>
+            
+            <div class="mb-4">
+                <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t.team_name_label }}</label>
+                <input type="text" name="name" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="{{ t.enter_team_name_placeholder }}" required />
             </div>
-        </div>
 
-        <button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{{ t.create_team_button }}</button>
-    </form>
+            <div class="mb-4">
+                <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t.description_label }}</label>
+                <textarea name="description" id="description" rows="4" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="{{ t.describe_team_placeholder }}" required></textarea>
+            </div>
 
-    {% if team_code %}
-        <p class="mt-4 text-gray-700 dark:text-gray-400">{{ t.team_code_message }} <strong>{{ team_code }}</strong></p>
-    {% endif %}
-</div>
-</div>
+            <!-- Team Picture Field -->
+            <div class="relative z-0 w-full mb-5 group">
+                <label for="team-picture-selection" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t.choose_team_picture_label }}</label>
+                <div id="team-picture-selection" class="grid grid-cols-10 gap-4">
+                    {% for image in team_pictures %}
+                        <input type="radio" name="selected_team_picture" id="team_picture_{{ forloop.counter }}" value="{{ image.id }}" class="hidden" required>
+                        <label for="team_picture_{{ forloop.counter }}">
+                            <img src="{{ image }}" alt="Team Picture {{ forloop.counter }}" class="team-image-preview rounded-lg cursor-pointer transition transform hover:scale-110" onclick="selectImage('{{ image }}', this)">
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Hidden input to store the selected image URL -->
+            <input type="hidden" name="selected_team_picture" id="selected_team_picture">
+
+            <button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{{ t.create_team_button }}</button>
+        </form>
+
+        {% if team_code %}
+            <p class="mt-4 text-gray-700 dark:text-gray-400">{{ t.team_code_message }} <strong>{{ team_code }}</strong></p>
+        {% endif %}
+    </div>
 </section>
 
 <script>
-    function selectImage(imageName, imageElement) {
+    function selectImage(imageUrl, imageElement) {
         // Deselect any previously selected image
         const selectedImage = document.querySelector('.selected-image');
         if (selectedImage) {
             selectedImage.classList.remove('selected-image');
         }
-    
+
         // Select the clicked image
         imageElement.classList.add('selected-image');
-    
-        // Update the hidden radio button
-        const radioButton = document.querySelector(`input[value="${imageName}"]`);
-        if (radioButton) {
-            radioButton.checked = true;
-        }
+
+        // Update the hidden input with the selected image URL
+        const hiddenInput = document.getElementById('selected_team_picture');
+        hiddenInput.value = imageUrl; // Store the selected image URL in the hidden input
     }
-    </script>
-    
+</script>
 {% endblock %}

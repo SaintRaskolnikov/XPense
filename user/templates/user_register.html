@@ -4,10 +4,9 @@
 
 <style>
     .valid {
-    color: green;
+        color: green;
     }
 
-    /* Invalid password condition */
     .invalid {
         color: red;
     }
@@ -19,15 +18,12 @@
         border: 2px solid transparent;
     }
 
-    .profile-image-preview.selected {
-        border-color: #4CAF50;
-    }
-        /* Highlight selected image with a border and shadow */
-        .selected-image {
-        border: 3px solid #4CAF50; /* Green border for selected image */
-        box-shadow: 0 0 10px rgba(0, 255, 0, 0.3); /* Green shadow effect */
+    .selected-image {
+        border: 3px solid #4CAF50;
+        box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
     }
 </style>
+
 <section class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-8">
     <div class="max-w-sm w-full p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
         <form method="POST" id="register-form" enctype="multipart/form-data">
@@ -35,21 +31,20 @@
             
             <!-- Username Field -->
             <div class="relative z-0 w-full mb-5 group">
-                <label for="floating_username" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t.username }}</label>
-                <input type="text" name="username" id="floating_username" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder=" " required />
+                <label for="id_username" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ form.username.label }}</label>
+                {{ form.username }}
             </div>
           
             <!-- Email Field -->
             <div class="relative z-0 w-full mb-5 group">
-                <label for="floating_email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t.email_address }}</label>
-                <input type="email" name="email" id="floating_email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder=" " required />
+                <label for="id_email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ form.email.label }}</label>
+                {{ form.email }}
             </div>
           
             <!-- Password Field -->
             <div class="relative z-0 w-full mb-5 group">
-                <label for="floating_password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t.password }}</label>
-                <input type="password" name="password" id="floating_password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder=" " required />
-                
+                <label for="id_password1" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ form.password1.label }}</label>
+                {{ form.password1 }}
                 <div id="password-requirements" class="mt-2 text-sm text-gray-500 dark:text-gray-400">
                     <p id="length" class="invalid">{{ t.password_length }}</p>
                     <p id="uppercase" class="invalid">{{ t.password_uppercase }}</p>
@@ -60,8 +55,8 @@
           
             <!-- Confirm Password Field -->
             <div class="relative z-0 w-full mb-5 group">
-                <label for="floating_password_confirm" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t.confirm_password }}</label>
-                <input type="password" name="password_confirm" id="floating_password_confirm" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder=" " required />
+                <label for="id_password2" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ form.password2.label }}</label>
+                {{ form.password2 }}
             </div>
 
             <!-- Profile Picture Field -->
@@ -69,21 +64,12 @@
                 <label for="profile-picture-selection" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t.profile_picture }}</label>
                 <div id="profile-picture-selection" class="grid grid-cols-3 gap-4">
                     {% for image in profile_pictures %}
-                        <input type="radio" name="profile_picture" id="{{image}}" value="{{image}}" style="display: none;">
-                        <img src="/media/profile_pictures/{{image}}" alt="{{image}}" class="profile-image-preview rounded-lg cursor-pointer transition transform hover:scale-110" onclick="selectImage('{{image}}', this)">
+                        <img src="{{ image }}" alt="Profile Picture" class="profile-image-preview rounded-lg cursor-pointer transition transform hover:scale-110" onclick="selectImage('{{ image }}', this)">
                     {% endfor %}
                 </div>
+                <input type="hidden" name="profile_picture" id="selected-profile-picture">
             </div>
 
-            <!-- Category Select -->
-            <div>
-                <label for="language" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">{{ t.category }}</label>
-                <select id="language" name="language" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-primary-500 dark:focus:ring-primary-500">
-                    {% for choice in form.language.choices %}
-                    <option value="{{ choice.0 }}">{{ choice.1 }}</option>
-                    {% endfor %}
-                </select>
-            </div>
 
             <!-- Submit Button -->
             <button type="submit" id="submit-btn" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" disabled>{{ t.register }}</button>
@@ -91,11 +77,11 @@
     </div>
 </section>
 
-
 <script>
-    const password = document.getElementById('floating_password');
-    const passwordConfirm = document.getElementById('floating_password_confirm');
+    const password = document.getElementById('id_password1');
+    const passwordConfirm = document.getElementById('id_password2');
     const submitButton = document.getElementById('submit-btn');
+    const selectedProfilePicture = document.getElementById('selected-profile-picture');
     const passwordRequirements = {
         length: document.getElementById('length'),
         uppercase: document.getElementById('uppercase'),
@@ -107,75 +93,45 @@
         const passwordValue = password.value;
         let valid = true;
 
-        // Check if password is at least 6 characters long
         if (passwordValue.length < 6) {
-            passwordRequirements.length.classList.remove('valid');
             passwordRequirements.length.classList.add('invalid');
             valid = false;
         } else {
-            passwordRequirements.length.classList.remove('invalid');
             passwordRequirements.length.classList.add('valid');
         }
 
-        // Check if password contains at least one uppercase letter
         if (!/[A-Z]/.test(passwordValue)) {
-            passwordRequirements.uppercase.classList.remove('valid');
             passwordRequirements.uppercase.classList.add('invalid');
             valid = false;
         } else {
-            passwordRequirements.uppercase.classList.remove('invalid');
             passwordRequirements.uppercase.classList.add('valid');
         }
 
-        // Check if password contains at least one number
         if (!/[0-9]/.test(passwordValue)) {
-            passwordRequirements.number.classList.remove('valid');
             passwordRequirements.number.classList.add('invalid');
             valid = false;
         } else {
-            passwordRequirements.number.classList.remove('invalid');
             passwordRequirements.number.classList.add('valid');
         }
 
-        // Check if password contains a special character
         if (!/[!@#$%^&*(),.?":{}|<>]/.test(passwordValue)) {
-            passwordRequirements.specialChar.classList.remove('valid');
             passwordRequirements.specialChar.classList.add('invalid');
             valid = false;
         } else {
-            passwordRequirements.specialChar.classList.remove('invalid');
             passwordRequirements.specialChar.classList.add('valid');
         }
 
-        // Enable or disable submit button based on validity
         submitButton.disabled = !valid || passwordValue !== passwordConfirm.value;
     }
 
-    // Validate password confirm match
-    function validatePasswordConfirm() {
-        if (password.value !== passwordConfirm.value) {
-            submitButton.disabled = true;
-        } else {
-            validatePassword();
-        }
+    function selectImage(imageUrl, imageElement) {
+        document.querySelectorAll('.profile-image-preview').forEach(img => img.classList.remove('selected-image'));
+        imageElement.classList.add('selected-image');
+        selectedProfilePicture.value = imageUrl;
     }
 
     password.addEventListener('input', validatePassword);
-    passwordConfirm.addEventListener('input', validatePasswordConfirm);
-
-
-    function selectImage(imageName, imageElement) {
-        // Deselect any previously selected images
-        const selectedImage = document.querySelector('.selected-image');
-        if (selectedImage) {
-            selectedImage.classList.remove('selected-image');
-        }
-
-        // Select the clicked image
-        imageElement.classList.add('selected-image');
-        // You can also set a hidden input with the selected image if necessary
-        document.getElementById('floating_profile_picture').value = imageName;
-    }
+    passwordConfirm.addEventListener('input', validatePassword);
 </script>
 
 {% endblock %}

@@ -14,6 +14,7 @@ urlpatterns = [
     path('team/list/', views.teams_list, name='teams_list'),
     path('team/edit/<str:team_code>/', views.edit_team, name='edit_team'),
     path('team/remove/<str:team_code>/<int:pk>/', views.remove_user_from_team, name='remove_user_from_team'),
+    path('team/delete/<str:team_code>/', views.delete_team, name='delete_team'),
     path('change-password/', views.change_password, name='change_password'),
 
 ]

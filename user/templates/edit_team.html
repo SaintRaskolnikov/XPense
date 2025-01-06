@@ -14,7 +14,7 @@
         <h3 class="text-lg text-gray-600 dark:text-gray-400 mb-6">{{ t.team_code }}: {{ team.team_code }}</h3>
 
         <!-- Team Edit Form -->
-        <form method="post" class="space-y-6 mb-6">
+        <form method="post" class="space-y-6 mb-6" enctype="multipart/form-data">  <!-- Add enctype for file uploads -->
             {% csrf_token %}
             
             <!-- Name Field -->
@@ -28,21 +28,38 @@
                 <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t.team_description }}</label>
                 <textarea id="description" name="description" rows="4" class="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>{{ form.description.value }}</textarea>
             </div>
+
             <!-- Team Picture Field -->
             <div class="relative z-0 w-full mb-5 group">
                 <label for="team-picture-selection" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ t.choose_team_picture }}</label>
                 <div id="team-picture-selection" class="grid grid-cols-10 gap-4">
                     {% for image in team_pictures %}
-                        <input type="radio" name="team_picture" id="{{image}}" value="{{image}}" style="display: none;">
-                        <img src="/media/profile_pictures/{{image}}" alt="{{image}}" class="team-image-preview rounded-lg cursor-pointer transition transform hover:scale-110" onclick="selectImage('{{image}}', this)">
+                        <input 
+                            type="radio" 
+                            name="team_picture" 
+                            id="team_picture_{{ forloop.counter }}" 
+                            value="{{ image }}" 
+                            class="hidden" 
+                            {% if team.team_picture == image %}checked{% endif %}
+                        >
+                        <label for="team_picture_{{ forloop.counter }}">
+                            <img 
+                                src="{{ image }}" 
+                                alt="Team Picture {{ forloop.counter }}" 
+                                class="team-image-preview rounded-lg cursor-pointer transition transform hover:scale-110 {% if team.team_picture  == image %}selected-image{% endif %}" 
+                                onclick="selectImage('{{ image }}', this)">
+                        </label>
                     {% endfor %}
-                    
                 </div>
             </div>
+
+            <!-- Hidden input to store the selected image URL -->
+            <input type="hidden" name="selected_team_picture" id="selected_team_picture">
 
             <!-- Submit Button -->
             <div class="mt-4">
                 <button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{{ t.save_changes }}</button>
+                <a href="{% url 'user:delete_team' team_code=team.team_code %}" class="block text-center mt-4 text-red-600 dark:text-red-400">{{ t.delete_team }}</a>
             </div>
         </form>
 
@@ -54,7 +71,7 @@
                 <div class="flex items-center space-x-4 rtl:space-x-reverse">
                     <div class="flex-shrink-0">
                         {% if user.profile_picture %}
-                        <img src="/media/profile_pictures/{{ user.profile_picture }}" alt="{{ t.profile_picture }}" class="h-10 w-10 rounded-full">
+                        <img src="{{ user.profile_picture }}" alt="{{ t.profile_picture }}" class="h-10 w-10 rounded-full">
                         {% else %}
                         <img src="/media/profile_pictures/user.png" alt="{{ t.default_profile_picture }}" class="h-10 w-10 rounded-full">
                         {% endif %}
@@ -67,7 +84,7 @@
                             {{ user.email }}
                         </p>
                     </div>
-                    {% if user == team.users.creator or request.user == user %}  <!-- Assuming the creator is the first user -->
+                    {% if user == team.users.creator or request.user == user %}
                         <div class="inline-flex items-center">
                             <form method="post" action="{% url 'user:remove_user_from_team' team_code=team.team_code pk=user.pk %}">
                                 {% csrf_token %}
@@ -88,23 +105,20 @@
     </div>
 </section>
 
-
 <script>
-    function selectImage(imageName, imageElement) {
+    function selectImage(imageUrl, imageElement) {
         // Deselect any previously selected image
         const selectedImage = document.querySelector('.selected-image');
         if (selectedImage) {
             selectedImage.classList.remove('selected-image');
         }
-    
+
         // Select the clicked image
         imageElement.classList.add('selected-image');
-    
-        // Update the hidden radio button
-        const radioButton = document.querySelector(`input[value="${imageName}"]`);
-        if (radioButton) {
-            radioButton.checked = true;
-        }
+
+        // Update the hidden input with the selected image URL
+        const hiddenInput = document.getElementById('selected_team_picture');
+        hiddenInput.value = imageUrl; // Store the selected image URL in the hidden input
     }
-    </script>
+</script>
 {% endblock %}

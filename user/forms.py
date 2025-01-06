@@ -12,6 +12,7 @@ class CustomUserCreationForm(forms.ModelForm):
     class Meta:
         model = CustomUser
         fields = ['username', 'email', 'password', 'password_confirm', 'profile_picture', 'language']
+        profile_picture = forms.ImageField(required=False)
 
     def clean_password(self):
         password = self.cleaned_data.get('password')
@@ -124,4 +125,4 @@ class JoinTeamForm(forms.Form):
 class TeamEditForm(forms.ModelForm):
     class Meta:
         model = Team
-        fields = ['name', 'description']  # You can include more fields if needed
+        fields = ['name', 'description', 'team_picture']  # You can include more fields if needed

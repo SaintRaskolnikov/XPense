@@ -3,24 +3,38 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
-from .forms import CustomLoginForm,CustomUserCreationForm, EditProfileForm, JoinTeamForm, TeamEditForm, ChangePasswordForm
+from .forms import CustomLoginForm,CustomUserCreationForm, EditProfileForm, JoinTeamForm, TeamEditForm, ChangePasswordForm,TeamCreateForm
 from django.contrib.auth import logout
 from .models import Team
 from django.conf import settings
 import os
 
 
+from cloudinary.api import resources
+from cloudinary.exceptions import Error
 
+def get_profile_pictures():
+    try:
+        folder_path = "media/profile_pictures"  # Your Cloudinary folder
+        response = resources(type="upload", prefix=folder_path, max_results=100)  # Fetch resources in the folder
+        images = [item["secure_url"] for item in response.get("resources", [])]
+        print(images)
+        return images
+    except Error as e:
+        print(f"Error fetching profile pictures: {e}")
+        return []
 
 def register(request):
 
-    profile_pictures_dir = os.path.join(settings.MEDIA_ROOT, 'profile_pictures')
-
-    profile_pictures = [f for f in os.listdir(profile_pictures_dir) if os.path.isfile(os.path.join(profile_pictures_dir, f))]
+    profile_pictures = get_profile_pictures()
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
+            selected_picture = request.POST.get('selected_profile_picture')
+            if selected_picture:
+                user.profile_picture = selected_picture  # Save the selected image URL
+                print(f'{user.profile_picture} pic selected')
             login(request, user)
             return redirect('tracker:dashboard')  # Redirect to the home page after successful registration
     else:
@@ -58,14 +72,16 @@ def login_view(request):
 @login_required
 def edit_profile(request):
     # Get the list of available profile pictures
-    profile_pictures_dir = os.path.join(settings.MEDIA_ROOT, 'profile_pictures')
-    profile_pictures = [f for f in os.listdir(profile_pictures_dir) if os.path.isfile(os.path.join(profile_pictures_dir, f))]
+    profile_pictures = get_profile_pictures()
 
     if request.method == 'POST':
         form = EditProfileForm(request.POST, instance=request.user)
         if form.is_valid():
             user = form.save(commit=False)
-
+            selected_picture = request.POST.get('selected_profile_picture')
+            if selected_picture:
+                user.profile_picture = selected_picture  # Save the selected image URL
+                print(f'{user.profile_picture} pic selected')
             user.save()
             messages.success(request, 'Your profile has been updated successfully!')
             return redirect('tracker:dashboard')  # Redirect to profile view or dashboard page
@@ -108,27 +124,50 @@ def delete_profile(request):
 
     return render(request, 'delete_user.html', {'user': user})
 
+@login_required
+def delete_team(request, team_code):
+    team = get_object_or_404(Team, team_code=team_code)
+    if request.user != team.creator:
+        messages.error(request, "You are not authorized to delete this team.")
+        return redirect('user:teams_list')
+    if request.method == 'POST':
+        team.delete()
+        messages.success(request, "The team has been deleted successfully.")
+        return redirect('user:teams_list')
+
+    return render(request, 'delete_team.html', {'team': team})
+
 
 @login_required
 def create_team(request):
-    team_pictures_dir = os.path.join(settings.MEDIA_ROOT, 'profile_pictures')
-    team_pictures = [f for f in os.listdir(team_pictures_dir) if os.path.isfile(os.path.join(team_pictures_dir, f))]
-    if request.method == 'POST':
-        description = request.POST.get('description')
-        name = request.POST.get('name')
-        team_picture = request.POST.get('team_picture')
-        
-        # Create the new team
-        team = Team.objects.create(name= name, description=description, creator=request.user, team_picture=team_picture)
-        team.users.add(request.user)
-        
-        # Get the generated team code
-        team_code = team.team_code
-
-        # Redirect to a confirmation page or display the team code
-        return redirect('user:teams_list')
+    profile_pictures = get_profile_pictures()
     
-    return render(request, 'create_team.html', context={'team_pictures': team_pictures})
+    if request.method == 'POST':
+        form = TeamCreateForm(request.POST)
+        
+        if form.is_valid():
+            # Create the team instance (don't save yet)
+            team = form.save(commit=False)  # Avoid saving immediately
+            
+            selected_picture = request.POST.get('selected_team_picture')
+            print(f'{selected_picture} pic selected')
+
+            if selected_picture:
+                team.team_picture = selected_picture  # Set the selected picture
+                
+            team.creator = request.user  # Set the creator to the current user
+            team.save()  # Save the team object to the database
+
+            team.users.add(request.user)  # Add the creator as a user to the team
+
+            # Redirect to the teams list or another confirmation page
+            return redirect('user:teams_list')
+    else:
+        form = TeamCreateForm()  # Initialize the form if the request method is not POST
+
+    return render(request, 'create_team.html', context={'team_pictures': profile_pictures, 'form': form})
+
+
 
 @login_required
 def logout_view(request):
@@ -170,24 +209,36 @@ def join_team(request):
 def teams_list(request):
     # Filter teams where the logged-in user is part of the team
     user_teams = request.user.teams.all()
+    for user_team in user_teams:
+        print(f'{user_team.team_picture} team list')
 
     return render(request, 'team_list.html', {'user_teams': user_teams})
 
 @login_required
 def edit_team(request, team_code):
     team = get_object_or_404(Team, team_code=team_code)
-    team_pictures_dir = os.path.join(settings.MEDIA_ROOT, 'profile_pictures')
-    team_pictures = [f for f in os.listdir(team_pictures_dir) if os.path.isfile(os.path.join(team_pictures_dir, f))]
+    profile_pictures = get_profile_pictures()
 
     if request.method == 'POST':
-        form = TeamEditForm(request.POST, instance=team)
+        form = TeamCreateForm(request.POST, instance=team)
         if form.is_valid():
-            form.save()
+            # Avoid saving immediately to modify fields
+            team = form.save(commit=False)
+
+            selected_picture = request.POST.get('selected_team_picture')
+            print(f'{selected_picture} pic selected edit')
+
+            if selected_picture:
+                team.team_picture = selected_picture  # Assign the selected picture URL
+
+            team.save()  # Save the team object to the database
+
             return redirect('user:teams_list')  # Redirect to team list after saving
     else:
-        form = TeamEditForm(instance=team)
+        form = TeamCreateForm(instance=team)
     
-    return render(request, 'edit_team.html', {'form': form, 'team': team, 'team_pictures': team_pictures})
+    return render(request, 'edit_team.html', {'form': form, 'team': team, 'team_pictures': profile_pictures})
+
     
 @login_required
 def remove_user_from_team(request, team_code, pk):
