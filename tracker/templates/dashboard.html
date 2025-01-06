@@ -213,16 +213,16 @@
 <div id="dropdownHover" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
   <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownHoverButton">
     <li>
-      <a href="{% url 'tracker:export_transactions' interval='current_year' %}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" id="exportCurrentYear">Current Year</a>
+      <a href="{% url 'tracker:export_transactions' interval='current_year' %}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" id="exportCurrentYear">{{ t.current_year }}</a>
     </li>
     <li>
-      <a href="{% url 'tracker:export_transactions' interval='last_year' %}"  class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" id="exportLastYear">Last Year</a>
+      <a href="{% url 'tracker:export_transactions' interval='last_year' %}"  class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" id="exportLastYear">{{ t.last_year }}</a>
     </li>
     <li>
-      <a href="{% url 'tracker:export_transactions' interval='current_month' %}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" id="exportCurrentMonth">Current Month</a>
+      <a href="{% url 'tracker:export_transactions' interval='current_month' %}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" id="exportCurrentMonth">{{ t.current_month }}</a>
     </li>
     <li>
-      <a href="{% url 'tracker:export_transactions' interval='last_month' %}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" id="exportLastMonth">Last Month</a>
+      <a href="{% url 'tracker:export_transactions' interval='last_month' %}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" id="exportLastMonth">{{ t.last_month }}</a>
     </li>
   </ul>
 </div>
