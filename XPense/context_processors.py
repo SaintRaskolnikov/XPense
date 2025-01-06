@@ -8,17 +8,19 @@ from django.conf import settings
 def user_info(request):
     if request.user.is_authenticated:
         try:
+            # Fetch the user profile and retrieve the profile picture URL
             profile = CustomUser.objects.get(id=request.user.id)
-            profile_picture = profile.get_profile_picture  # Get the profile picture URL
+            profile_picture = profile.profile_picture_url if profile.profile_picture_url else None  # Ensure it gets the Cloudinary URL
+            print(profile_picture)
         except CustomUser.DoesNotExist:
-            profile_picture = 'media/people/user.png'  # Default profile picture if user doesn't have one
+            profile_picture = None  # Handle case where user profile doesn't exist
+        
         return {
             'username': request.user.username,
             'email': request.user.email,
             'profile_picture': profile_picture,
         }
     return {}
-
 
 
 def load_translations(language):

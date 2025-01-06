@@ -12,11 +12,23 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
-from celery.schedules import crontab
 from urllib.parse import urlparse
+import cloudinary
+import cloudinary.uploader
+from cloudinary.utils import cloudinary_url
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+# Configuration       
+cloudinary.config( 
+    cloud_name = "dx0hxfr1a", 
+    api_key = "273758838183737", 
+    api_secret = "CYsMkUjvoTuLBnKOUNqVyY8QjzQ", # Click 'View API Keys' above to copy your API secret
+    secure=True
+)
 
 
 # Quick-start development settings - unsuitable for production
@@ -26,15 +38,24 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-2&wv7-#v%rl$!0$8ju@+#zue)@-qq=uqe!)9*7wjbfwqg6k9ok'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['.vercel.app']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '172.16.0.104', '.vercel.app']
 
 AUTH_USER_MODEL = 'user.CustomUser'
 LOGOUT_REDIRECT_URL = '/' 
 LOGIN_URL = '/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+# Application definition
+
+# Define available languages
+LANGUAGES = [
+    ('en', 'English'),
+    ('pt', 'Portuguese'),
+    ('de', 'German'),
+    ('fr', 'French'),
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -80,6 +101,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'XPense.wsgi.application'
 
+
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',  # Default backend
     # Your custom backend, if applicable
@@ -110,15 +132,6 @@ DATABASES = {
 }
 
 
-CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Or use a different broker
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_BEAT_SCHEDULE = {
-    'process-subscriptions-daily': {
-        'task': 'your_project.tasks.process_subscriptions',
-        'schedule': crontab(minute=0, hour=0),  # Run at midnight every day
-    },
-}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
