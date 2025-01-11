@@ -43,7 +43,7 @@
           
             <!-- Password Field -->
             <div class="relative z-0 w-full mb-5 group">
-                <label for="id_password1" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ form.password1.label }}</label>
+                <label for="id_password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
                 {{ form.password }}
                 <div id="password-requirements" class="mt-2 text-sm text-gray-500 dark:text-gray-400">
                     <p id="length" class="invalid">{{ t.password_length }}</p>
@@ -55,7 +55,7 @@
           
             <!-- Confirm Password Field -->
             <div class="relative z-0 w-full mb-5 group">
-                <label for="id_password2" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ form.password2.label }}</label>
+                <label for="id_password_confirm" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Confirm password</label>
                 {{ form.password_confirm }}
             </div>
 
